@@ -5,7 +5,9 @@ export const fibonacci = (n: number): string[] => {
   if (n === 1) return ["1"];
   const res = [1, 2];
   for (const _ of range(n - 2)) {
-    res.push(res.at(-2)! + res.at(-1)!);
+    const a = res.pop()!;
+    const b = res.pop()!;
+    res.push(b, a, a + b);
   }
   return res.map((i) => i.toString());
 };
