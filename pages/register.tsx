@@ -5,6 +5,13 @@ import {
 } from "next";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  if (context.req.cookies.user)
+    return {
+      redirect: {
+        destination: `/${context.query?.source || ""}`,
+        permanent: false,
+      },
+    };
   const source: string | null = (context.query.source as string) ?? null;
   return {
     props: {
