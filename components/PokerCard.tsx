@@ -23,7 +23,9 @@ const card: Record<CardState, (value: string) => JSX.Element> = {
       </span>
     </div>
   ),
-  unplayed: () => <div className="w-24 h-36 bg-gray-100 blur-sm rounded-lg" />,
+  unplayed: () => (
+    <div className="w-24 h-36 bg-gray-500/30 blur-sm rounded-lg" />
+  ),
 };
 
 export const PokerCard: FC<Props> = (props) => {
