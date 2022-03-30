@@ -3,7 +3,7 @@ import { PokerCard } from "components";
 import { PusherContext } from "context";
 import { GetServerSideProps, NextPage } from "next";
 import Pusher, { Channel, Members } from "pusher-js";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { ChannelMember, Session } from "types";
 import { fibonacci } from "utils/fibonacci";
@@ -37,6 +37,13 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
     () => "/api/session?sessionId=" + sessionId,
     fetcher
   );
+  const mutator = useCallback(
+    async (session) =>
+      await (
+        await axios.post("/api/session", { session, socketId })
+      ).data,
+    [socketId]
+  );
 
   Pusher.logToConsole = true;
 
@@ -60,33 +67,7 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
     channel.bind("pusher:member_removed", (member: ChannelMember) =>
       setMembers((prev) => prev.filter((m) => m.id !== member.id))
     );
-    channel.bind(
-      "member_voted",
-      ({ vote, userId }: { vote: string; userId: string }) => {
-        mutate(
-          async (session) => {
-            if (!session) return;
-            return {
-              ...session,
-              votes: {
-                ...session?.votes,
-                [userId]: vote,
-              },
-            };
-          },
-          { revalidate: false }
-        );
-      }
-    );
-    channel.bind("revealed", () =>
-      mutate(
-        async (session) => {
-          if (!session) return;
-          return { ...session, revealed: !session.revealed };
-        },
-        { revalidate: true }
-      )
-    );
+    channel.bind("update", (session: Session) => mutate(session));
   }, [channel, sessionId, mutate]);
 
   if (!session) return <></>;
@@ -114,24 +95,12 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
           key={amount}
           className="bg-slate-400 p-4 m-4"
           onClick={async () => {
-            mutate(
-              async () =>
-                await (
-                  await axios.post("/api/vote", {
-                    sessionId,
-                    vote: amount,
-                    socketId,
-                    user_id: userId,
-                  })
-                ).data,
-              {
-                optimisticData: {
-                  ...session,
-                  votes: { ...session.votes, [userId]: amount },
-                },
-                revalidate: false,
-              }
-            );
+            mutate(mutator, {
+              optimisticData: {
+                ...session,
+                votes: { ...session.votes, [userId]: amount },
+              },
+            });
           }}
         >
           {amount}
@@ -139,23 +108,12 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
       ))}
       <button
         onClick={() =>
-          mutate(
-            async (session) =>
-              await (
-                await axios.post("/api/reveal", {
-                  sessionId,
-                  revealed: session?.revealed,
-                  socketId,
-                })
-              ).data,
-            {
-              optimisticData: {
-                ...session,
-                revealed: !session.revealed,
-              },
-              revalidate: false,
-            }
-          )
+          mutate(mutator, {
+            optimisticData: {
+              ...session,
+              revealed: !session.revealed,
+            },
+          })
         }
       >
         Flip cards
