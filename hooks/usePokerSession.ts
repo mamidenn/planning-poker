@@ -25,9 +25,7 @@ export const usePokerSession = (sessionId: string) => {
   const setSession = useCallback(
     (session: PokerSession) =>
       mutate(mutator, {
-        optimisticData: {
-          ...session,
-        },
+        optimisticData: session,
       }),
     [mutate, mutator]
   );
