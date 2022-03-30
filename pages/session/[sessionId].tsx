@@ -12,7 +12,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!context.req.cookies.user)
     return {
       redirect: {
-        destination: `/register?source=/${context.params!.sessionId}`,
+        destination: `/register?source=/session/${context.params!.sessionId}`,
         permanent: false,
       },
     };
