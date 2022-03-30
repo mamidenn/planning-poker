@@ -8,7 +8,7 @@ export default async function handler(
 ): Promise<void> {
   const sessionId = req.query.sessionId as string;
   if (!sessionId) {
-    res.status(400).json({ id: "", votes: {} });
+    res.status(400).json({ id: "", votes: {}, revealed: false });
     return;
   }
   const client = await clientPromise;
@@ -18,5 +18,5 @@ export default async function handler(
     { id: sessionId },
     { projection: { _id: 0 } }
   );
-  res.status(200).json(data || { id: sessionId, votes: {} });
+  res.status(200).json(data || { id: sessionId, votes: {}, revealed: false });
 }

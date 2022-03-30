@@ -1,7 +1,6 @@
 import { clientPromise } from "modules/mongodb";
 import { pusher } from "modules/pusher";
 import type { NextApiRequest, NextApiResponse } from "next";
-import Pusher from "pusher";
 import { Session } from "types";
 
 export default async function handler(
@@ -16,11 +15,10 @@ export default async function handler(
   const client = await clientPromise;
   const sessions = client.db().collection<Session>("sessions");
 
-  const { user_id }: Pusher.PresenceChannelData = JSON.parse(req.cookies.user);
   const [updateResult] = await Promise.all([
     sessions.findOneAndUpdate(
       { id: sessionId },
-      { $set: { ["votes." + user_id]: req.body.vote } },
+      { $set: { revealed: req.body.revealed } },
       {
         upsert: true,
         returnDocument: "after",
@@ -29,8 +27,8 @@ export default async function handler(
     ),
     pusher.trigger(
       `presence-${req.body.sessionId}`,
-      "member_voted",
-      { userId: user_id, vote: req.body.vote },
+      "revealed",
+      {},
       { socket_id: req.body.socketId }
     ),
   ]);

@@ -5,6 +5,7 @@ export interface Votes {
 export interface Session {
   id: string;
   votes: Votes;
+  revealed: boolean;
 }
 
 export interface ChannelMember {

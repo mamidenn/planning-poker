@@ -3,8 +3,8 @@ import { PokerCard } from "components";
 import { PusherContext } from "context";
 import { GetServerSideProps, NextPage } from "next";
 import Pusher, { Channel, Members } from "pusher-js";
-import { useCallback, useContext, useEffect, useState } from "react";
-import useSWR, { mutate } from "swr";
+import { useContext, useEffect, useState } from "react";
+import useSWR from "swr";
 import { ChannelMember, Session } from "types";
 import { fibonacci } from "utils/fibonacci";
 
@@ -33,25 +33,11 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
   const { pusher, socketId } = useContext(PusherContext);
   const [channel, setChannel] = useState<Channel>();
   const [members, setMembers] = useState<ChannelMember[]>([]);
-  const voteKey = `/api/session?sessionId=${sessionId}`;
-  const { data: session } = useSWR<Session>(voteKey, fetcher);
-
-  const setVote = useCallback(
-    (userId: string, vote: string) => {
-      mutate(
-        voteKey,
-        async (session: Session) => ({
-          ...session,
-          votes: {
-            ...session.votes,
-            [userId]: vote,
-          },
-        }),
-        { revalidate: false }
-      );
-    },
-    [voteKey]
+  const { data: session, mutate } = useSWR<Session>(
+    () => "/api/session?sessionId=" + sessionId,
+    fetcher
   );
+
   Pusher.logToConsole = true;
 
   useEffect(() => {
@@ -77,41 +63,103 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
     channel.bind(
       "member_voted",
       ({ vote, userId }: { vote: string; userId: string }) => {
-        setVote(userId, vote);
+        mutate(
+          async (session) => {
+            if (!session) return;
+            return {
+              ...session,
+              votes: {
+                ...session?.votes,
+                [userId]: vote,
+              },
+            };
+          },
+          { revalidate: false }
+        );
       }
     );
-  }, [channel, sessionId, setVote]);
+    channel.bind("revealed", () =>
+      mutate(
+        async (session) => {
+          if (!session) return;
+          return { ...session, revealed: !session.revealed };
+        },
+        { revalidate: true }
+      )
+    );
+  }, [channel, sessionId, mutate]);
+
+  if (!session) return <></>;
 
   return (
     <>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-4">
-        {session &&
-          members.map((m) => (
-            <PokerCard
-              key={m.id}
-              player={m.info.name}
-              value={session.votes[m.id]}
-              state="faceUp"
-            />
-          ))}
+        {members.map((m) => (
+          <PokerCard
+            key={m.id}
+            player={m.info.name}
+            value={session.votes[m.id] || ""}
+            state={
+              session.votes[m.id] === undefined
+                ? "unplayed"
+                : session.revealed
+                ? "faceUp"
+                : "faceDown"
+            }
+          />
+        ))}
       </div>
       {[...fibonacci(10), "?"].map((amount) => (
         <button
           key={amount}
           className="bg-slate-400 p-4 m-4"
-          onClick={() => {
-            setVote(userId, amount);
-            axios.post("/api/vote", {
-              sessionId,
-              vote: amount,
-              socketId,
-              user_id: userId,
-            });
+          onClick={async () => {
+            mutate(
+              async () =>
+                await (
+                  await axios.post("/api/vote", {
+                    sessionId,
+                    vote: amount,
+                    socketId,
+                    user_id: userId,
+                  })
+                ).data,
+              {
+                optimisticData: {
+                  ...session,
+                  votes: { ...session.votes, [userId]: amount },
+                },
+                revalidate: false,
+              }
+            );
           }}
         >
           {amount}
         </button>
       ))}
+      <button
+        onClick={() =>
+          mutate(
+            async (session) =>
+              await (
+                await axios.post("/api/reveal", {
+                  sessionId,
+                  revealed: session?.revealed,
+                  socketId,
+                })
+              ).data,
+            {
+              optimisticData: {
+                ...session,
+                revealed: !session.revealed,
+              },
+              revalidate: false,
+            }
+          )
+        }
+      >
+        Flip cards
+      </button>
     </>
   );
 };
