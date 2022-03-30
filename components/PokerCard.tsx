@@ -1,4 +1,5 @@
-import React, { FC } from "react";
+import classNames from "classnames";
+import React, { FC, useEffect, useState } from "react";
 
 type CardState = "faceUp" | "faceDown" | "unplayed";
 
@@ -27,9 +28,34 @@ const card: Record<CardState, (value: string) => JSX.Element> = {
 };
 
 export const PokerCard: FC<Props> = (props) => {
+  const [state, setState] = useState(props.state);
+  const [transitioning, setTransitioning] = useState(false);
+
+  useEffect(() => {
+    if (
+      (state === "faceDown" && props.state === "faceUp") ||
+      (state === "faceUp" && props.state === "faceDown")
+    ) {
+      (async () => {
+        setTransitioning(true);
+        await new Promise((resolve) => setTimeout(resolve, 75));
+        setState(props.state);
+        setTransitioning(false);
+      })();
+    } else {
+      setState(props.state);
+    }
+  }, [state, props.state]);
+
   return (
     <div className="flex flex-col items-center gap-1">
-      {card[props.state](props.value)}
+      <div
+        className={classNames("transition-transform ease-linear", {
+          "rotate-y-180": transitioning,
+        })}
+      >
+        {card[state](props.value)}
+      </div>
       {props.player && <span className="font-semibold">{props.player}</span>}
     </div>
   );
