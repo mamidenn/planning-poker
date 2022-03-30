@@ -46,12 +46,12 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
           />
         ))}
       </div>
-      <div className="fixed bottom-0 w-full flex justify-center gap-2">
+      <div className="fixed bottom-0 pl-12 flex justify-center gap-2 pointer-events-none">
         {[...fibonacci(10), "?"].map((amount) => (
           <button
             key={amount}
             className={classNames(
-              "translate-y-16 hover:translate-y-0 transition-transform -ml-12 shadow-md",
+              "hover:translate-y-0 translate-y-16 transition-transform -ml-12 shadow-md pointer-events-auto",
               {
                 invisible: amount === session.votes[userId],
               }
