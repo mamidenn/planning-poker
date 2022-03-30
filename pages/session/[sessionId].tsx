@@ -30,7 +30,7 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
 
   return (
     <div className="container mx-auto flex flex-col justify-center items-center min-h-screen">
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-8">
         {members.map((m) => (
           <PokerCard
             key={m.id}
@@ -50,12 +50,10 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
         {[...fibonacci(10), "?"].map((amount) => (
           <button
             key={amount}
-            className={classNames(
-              "hover:translate-y-0 translate-y-16 transition-transform -ml-12 shadow-md pointer-events-auto",
-              {
-                invisible: amount === session.votes[userId],
-              }
-            )}
+            className={
+              "disabled:opacity-0 disabled:-translate-y-16 disabled:pointer-events-none hover:translate-y-0 translate-y-16 transition-all -ml-12 shadow-md pointer-events-auto"
+            }
+            disabled={amount === session.votes[userId]}
             onClick={() =>
               setSession({
                 ...session,
