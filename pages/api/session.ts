@@ -1,5 +1,6 @@
 import { clientPromise } from "modules/mongodb";
 import { pusher } from "modules/pusher";
+import { MatchKeysAndValues } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Pusher from "pusher";
 import { PokerSession } from "types";
@@ -40,14 +41,15 @@ export default async function handler(
         return;
       }
 
+      const $set: MatchKeysAndValues<PokerSession> = {
+        revealed: session.revealed,
+      };
+      if (session.votes[user_id] !== undefined)
+        $set["votes." + user_id] = session.votes[user_id];
+
       const updateResult = await sessions.findOneAndUpdate(
         { id: session.id },
-        {
-          $set: {
-            ["votes." + user_id]: session.votes[user_id],
-            revealed: session.revealed,
-          },
-        },
+        { $set },
         {
           upsert: true,
           returnDocument: "after",
