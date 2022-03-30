@@ -31,9 +31,6 @@ export default async function handler(
       res.status(200).json(data);
       return;
     case "POST":
-      const { user_id }: Pusher.PresenceChannelData = JSON.parse(
-        req.cookies.user
-      );
       const { session, socketId } = req.body;
 
       if (!session || !socketId) {
@@ -41,15 +38,14 @@ export default async function handler(
         return;
       }
 
-      const $set: MatchKeysAndValues<PokerSession> = {
-        revealed: session.revealed,
-      };
-      if (session.votes[user_id] !== undefined)
-        $set["votes." + user_id] = session.votes[user_id];
-
       const updateResult = await sessions.findOneAndUpdate(
         { id: session.id },
-        { $set },
+        {
+          $set: {
+            revealed: session.revealed,
+            votes: session.votes,
+          },
+        },
         {
           upsert: true,
           returnDocument: "after",

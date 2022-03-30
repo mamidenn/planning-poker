@@ -77,6 +77,17 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
       >
         Flip cards
       </button>
+      <button
+        onClick={() =>
+          setSession({
+            ...session,
+            revealed: false,
+            votes: {},
+          })
+        }
+      >
+        Reset vote
+      </button>
     </>
   );
 };
