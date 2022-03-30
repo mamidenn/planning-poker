@@ -2,13 +2,15 @@ import { clientPromise } from "modules/mongodb";
 import { pusher } from "modules/pusher";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Pusher from "pusher";
-import { Session } from "types";
+import { PokerSession } from "types";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Session>
+  res: NextApiResponse<PokerSession>
 ): Promise<void> {
-  const sessions = (await clientPromise).db().collection<Session>("sessions");
+  const sessions = (await clientPromise)
+    .db()
+    .collection<PokerSession>("sessions");
 
   switch (req.method) {
     case "GET":

@@ -2,7 +2,7 @@ export interface Votes {
   [id: string]: string;
 }
 
-export interface Session {
+export interface PokerSession {
   id: string;
   votes: Votes;
   revealed: boolean;

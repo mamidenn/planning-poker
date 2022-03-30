@@ -1,14 +1,7 @@
-import axios from "axios";
 import { PokerCard } from "components";
-import { PusherContext } from "context";
+import { usePokerSession } from "hooks/usePokerSession";
 import { GetServerSideProps, NextPage } from "next";
-import Pusher, { Channel, Members } from "pusher-js";
-import { useCallback, useContext, useEffect, useState } from "react";
-import useSWR from "swr";
-import { ChannelMember, Session } from "types";
 import { fibonacci } from "utils/fibonacci";
-
-const fetcher = async (uri: string) => await (await axios.get(uri)).data;
 
 interface Props {
   sessionId: string;
@@ -30,45 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const Session: NextPage<Props> = ({ sessionId, userId }) => {
-  const { pusher, socketId } = useContext(PusherContext);
-  const [channel, setChannel] = useState<Channel>();
-  const [members, setMembers] = useState<ChannelMember[]>([]);
-  const { data: session, mutate } = useSWR<Session>(
-    () => "/api/session?sessionId=" + sessionId,
-    fetcher
-  );
-  const mutator = useCallback(
-    async (session) =>
-      await (
-        await axios.post("/api/session", { session, socketId })
-      ).data,
-    [socketId]
-  );
-
-  Pusher.logToConsole = true;
-
-  useEffect(() => {
-    if (!pusher) return;
-    setChannel(pusher.subscribe(`presence-${sessionId}`));
-  }, [sessionId, pusher]);
-
-  useEffect(() => {
-    if (!channel) return;
-    channel.bind("pusher:subscription_succeeded", (members: Members) => {
-      const initialMembers: ChannelMember[] = [];
-      members.each((member: ChannelMember) => {
-        initialMembers.push(member);
-      });
-      setMembers(initialMembers);
-    });
-    channel.bind("pusher:member_added", (member: ChannelMember) =>
-      setMembers((prev) => [...prev, member])
-    );
-    channel.bind("pusher:member_removed", (member: ChannelMember) =>
-      setMembers((prev) => prev.filter((m) => m.id !== member.id))
-    );
-    channel.bind("update", (session: Session) => mutate(session));
-  }, [channel, sessionId, mutate]);
+  const { session, setSession, members } = usePokerSession(sessionId);
 
   if (!session) return <></>;
 
@@ -94,25 +49,21 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
         <button
           key={amount}
           className="bg-slate-400 p-4 m-4"
-          onClick={async () => {
-            mutate(mutator, {
-              optimisticData: {
-                ...session,
-                votes: { ...session.votes, [userId]: amount },
-              },
-            });
-          }}
+          onClick={() =>
+            setSession({
+              ...session,
+              votes: { ...session.votes, [userId]: amount },
+            })
+          }
         >
           {amount}
         </button>
       ))}
       <button
         onClick={() =>
-          mutate(mutator, {
-            optimisticData: {
-              ...session,
-              revealed: !session.revealed,
-            },
+          setSession({
+            ...session,
+            revealed: !session.revealed,
           })
         }
       >
