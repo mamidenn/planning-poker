@@ -1,4 +1,5 @@
 import axios from "axios";
+import { PokerCard } from "components";
 import { PusherContext } from "context";
 import { GetServerSideProps, NextPage } from "next";
 import Pusher, { Channel, Members } from "pusher-js";
@@ -80,15 +81,17 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
 
   return (
     <>
-      Hi!
-      <ul>
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-4">
         {votes &&
           members.map((m) => (
-            <li key={m.id}>
-              {m.info.name} [{m.id}] ({votes[m.id]})
-            </li>
+            <PokerCard
+              key={m.id}
+              player={m.info.name}
+              value={votes[m.id]}
+              state="faceUp"
+            />
           ))}
-      </ul>
+      </div>
       {[...fibonacci(10), "?"].map((amount) => (
         <button
           key={amount}

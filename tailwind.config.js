@@ -5,7 +5,11 @@ module.exports = {
     "./context/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "card-back": "url('/card-back.svg')",
+      },
+    },
   },
   plugins: [],
 };
