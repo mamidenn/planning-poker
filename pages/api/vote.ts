@@ -4,8 +4,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import Pusher from "pusher";
 import { Session } from "types";
 
-const omitId = { projection: { _id: 0 } };
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Session>
@@ -15,19 +13,18 @@ export default async function handler(
     res.status(400).json({ id: "", votes: {} });
     return;
   }
-  const filter = { id: sessionId };
   const client = await clientPromise;
-  const sessions = client.db().collection("sessions");
+  const sessions = client.db().collection<Session>("sessions");
 
   const { user_id }: Pusher.PresenceChannelData = JSON.parse(req.cookies.user);
   const [updateResult] = await Promise.all([
     sessions.findOneAndUpdate(
-      filter,
+      { id: sessionId },
       { $set: { ["votes." + user_id]: req.body.vote } },
       {
         upsert: true,
         returnDocument: "after",
-        ...omitId,
+        projection: { _id: 0 },
       }
     ),
     pusher.trigger(
@@ -37,5 +34,5 @@ export default async function handler(
       { socket_id: req.body.socketId }
     ),
   ]);
-  res.status(200).json(updateResult.value as unknown as Session);
+  res.status(200).json(updateResult.value!);
 }

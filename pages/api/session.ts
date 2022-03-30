@@ -12,9 +12,9 @@ export default async function handler(
     return;
   }
   const client = await clientPromise;
-  const sessions = client.db().collection("sessions");
+  const sessions = client.db().collection<Session>("sessions");
 
-  const data = await sessions.findOne<Session>(
+  const data = await sessions.findOne(
     { id: sessionId },
     { projection: { _id: 0 } }
   );
