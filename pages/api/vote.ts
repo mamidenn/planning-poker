@@ -2,17 +2,17 @@ import { clientPromise } from "modules/mongodb";
 import { pusher } from "modules/pusher";
 import type { NextApiRequest, NextApiResponse } from "next";
 import Pusher from "pusher";
-import { Votes } from "types";
+import { Session } from "types";
 
-const omitIds = { projection: { _id: 0, id: 0 } };
+const omitId = { projection: { _id: 0 } };
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Votes>
+  res: NextApiResponse<Session>
 ): Promise<void> {
   const sessionId = req.body.sessionId || req.query.sessionId;
   if (!sessionId) {
-    res.status(400).json({});
+    res.status(400).json({ id: "", votes: {} });
     return;
   }
   const filter = { id: sessionId };
@@ -20,8 +20,8 @@ export default async function handler(
   const sessions = client.db().collection("sessions");
   switch (req.method) {
     case "GET":
-      const data = await sessions.findOne<Votes>(filter, omitIds);
-      res.status(200).json(data || {});
+      const data = await sessions.findOne<Session>(filter, omitId);
+      res.status(200).json(data || { id: sessionId, votes: {} });
       break;
     case "POST":
       const { user_id }: Pusher.PresenceChannelData = JSON.parse(
@@ -30,11 +30,11 @@ export default async function handler(
       const [updateResult] = await Promise.all([
         sessions.findOneAndUpdate(
           filter,
-          { $set: { [user_id]: req.body.vote } },
+          { $set: { ["votes." + user_id]: req.body.vote } },
           {
             upsert: true,
             returnDocument: "after",
-            ...omitIds,
+            ...omitId,
           }
         ),
         pusher.trigger(
@@ -44,7 +44,7 @@ export default async function handler(
           { socket_id: req.body.socketId }
         ),
       ]);
-      res.status(200).json(updateResult.value as Votes);
+      res.status(200).json(updateResult.value as unknown as Session);
       break;
   }
 }

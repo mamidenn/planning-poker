@@ -5,7 +5,7 @@ import { GetServerSideProps, NextPage } from "next";
 import Pusher, { Channel, Members } from "pusher-js";
 import { useCallback, useContext, useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { ChannelMember, Votes } from "types";
+import { ChannelMember, Session } from "types";
 import { fibonacci } from "utils/fibonacci";
 
 const fetcher = async (uri: string) => await (await axios.get(uri)).data;
@@ -34,15 +34,18 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
   const [channel, setChannel] = useState<Channel>();
   const [members, setMembers] = useState<ChannelMember[]>([]);
   const voteKey = `/api/vote?sessionId=${sessionId}`;
-  const { data: votes } = useSWR<Votes>(voteKey, fetcher);
+  const { data: session } = useSWR<Session>(voteKey, fetcher);
 
   const setVote = useCallback(
     (userId: string, vote: string) => {
       mutate(
         voteKey,
-        async (votes: Votes) => ({
-          ...votes,
-          [userId]: vote,
+        async (session: Session) => ({
+          ...session,
+          votes: {
+            ...session.votes,
+            [userId]: vote,
+          },
         }),
         { revalidate: false }
       );
@@ -82,12 +85,12 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
   return (
     <>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-4">
-        {votes &&
+        {session &&
           members.map((m) => (
             <PokerCard
               key={m.id}
               player={m.info.name}
-              value={votes[m.id]}
+              value={session.votes[m.id]}
               state="faceUp"
             />
           ))}
