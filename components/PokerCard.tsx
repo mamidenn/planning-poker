@@ -3,7 +3,7 @@ import React, { FC } from "react";
 type CardState = "faceUp" | "faceDown" | "unplayed";
 
 interface Props {
-  player: string;
+  player?: string;
   value: string;
   state: CardState;
 }
@@ -28,9 +28,9 @@ const card: Record<CardState, (value: string) => JSX.Element> = {
 
 export const PokerCard: FC<Props> = (props) => {
   return (
-    <div className="flex flex-col items-center space-y-1">
+    <div className="flex flex-col items-center gap-1">
       {card[props.state](props.value)}
-      <span className="font-semibold">{props.player}</span>
+      {props.player && <span className="font-semibold">{props.player}</span>}
     </div>
   );
 };

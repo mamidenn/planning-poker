@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { PokerCard } from "components";
 import { usePokerSession } from "hooks/usePokerSession";
 import { GetServerSideProps, NextPage } from "next";
@@ -45,20 +46,27 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
           />
         ))}
       </div>
-      {[...fibonacci(10), "?"].map((amount) => (
-        <button
-          key={amount}
-          className="bg-slate-400 p-4 m-4"
-          onClick={() =>
-            setSession({
-              ...session,
-              votes: { ...session.votes, [userId]: amount },
-            })
-          }
-        >
-          {amount}
-        </button>
-      ))}
+      <div className="fixed bottom-0 w-full flex justify-center gap-2">
+        {[...fibonacci(10), "?"].map((amount) => (
+          <button
+            key={amount}
+            className={classNames(
+              "translate-y-16 hover:translate-y-0 transition-transform -ml-12 shadow-md",
+              {
+                invisible: amount === session.votes[userId],
+              }
+            )}
+            onClick={() =>
+              setSession({
+                ...session,
+                votes: { ...session.votes, [userId]: amount },
+              })
+            }
+          >
+            <PokerCard value={amount} state="faceUp" />
+          </button>
+        ))}
+      </div>
       <button
         onClick={() =>
           setSession({
