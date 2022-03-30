@@ -13,7 +13,7 @@ const card: Record<CardState, (value: string) => JSX.Element> = {
     <div className="border-4 border-gray-50 outline outline-1 outline-gray-900/5 w-24 h-36 shadow-md rounded-lg bg-card-back" />
   ),
   faceUp: (value) => (
-    <div className="flex flex-col justify-between outline outline-1 outline-gray-900/5 w-24 h-36 p-1 shadow-md rounded-lg">
+    <div className="flex flex-col justify-between outline outline-1 outline-gray-900/5 w-24 h-36 p-1 shadow-md rounded-lg bg-white">
       <span className="self-end underline underline-offset-2 text-sm">
         {value}
       </span>
