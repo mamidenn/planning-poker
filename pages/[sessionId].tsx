@@ -33,7 +33,7 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
   const { pusher, socketId } = useContext(PusherContext);
   const [channel, setChannel] = useState<Channel>();
   const [members, setMembers] = useState<ChannelMember[]>([]);
-  const voteKey = `/api/vote?sessionId=${sessionId}`;
+  const voteKey = `/api/session?sessionId=${sessionId}`;
   const { data: session } = useSWR<Session>(voteKey, fetcher);
 
   const setVote = useCallback(
