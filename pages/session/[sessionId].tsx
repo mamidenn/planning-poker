@@ -29,8 +29,8 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
   if (!session) return <></>;
 
   return (
-    <>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-4">
+    <div className="container mx-auto flex flex-col justify-center items-center min-h-screen">
+      <div className="flex flex-wrap justify-center gap-4">
         {members.map((m) => (
           <PokerCard
             key={m.id}
@@ -88,7 +88,7 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
       >
         Reset vote
       </button>
-    </>
+    </div>
   );
 };
 
