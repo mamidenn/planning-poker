@@ -5,7 +5,6 @@ import Pusher from "pusher";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { name } = req.body;
-  if (!name) res.status(400).json({});
   const user: Pusher.PresenceChannelData = {
     user_id: randomUUID(),
     user_info: {
