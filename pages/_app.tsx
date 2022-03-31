@@ -5,9 +5,7 @@ import { Pusher, Toasts } from "context";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Toasts>
-      <Pusher>
-        <Component {...pageProps} />
-      </Pusher>
+      <Component {...pageProps} />
     </Toasts>
   );
 }
