@@ -65,7 +65,7 @@ export default async function handler(
     return;
   }
   if (req.method === "POST") {
-    const { sessionId } = req.body;
+    const { sessionId }: { sessionId: string } = req.body;
 
     if (!sessionId) {
       res.status(400).end();
@@ -73,7 +73,7 @@ export default async function handler(
     }
 
     const insertResult = await sessions.insertOne({
-      id: sessionId as string,
+      id: sessionId,
       revealed: false,
       votes: {},
     });
