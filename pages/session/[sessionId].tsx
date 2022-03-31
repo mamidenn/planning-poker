@@ -1,5 +1,4 @@
-import classNames from "classnames";
-import { HandOfCards, PokerCard } from "components";
+import { Button, HandOfCards, PokerCard } from "components";
 import { usePokerSession } from "hooks/usePokerSession";
 import { GetServerSideProps, NextPage } from "next";
 import { fibonacci } from "utils/fibonacci";
@@ -58,7 +57,9 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
           }
         />
       </div>
-      <button
+      <div className="flex gap-4 my-4">
+        <Button
+          primary
         onClick={() =>
           setSession({
             ...session,
@@ -67,8 +68,8 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
         }
       >
         Flip cards
-      </button>
-      <button
+        </Button>
+        <Button
         onClick={() =>
           setSession({
             ...session,
@@ -78,7 +79,8 @@ const Session: NextPage<Props> = ({ sessionId, userId }) => {
         }
       >
         Reset vote
-      </button>
+        </Button>
+      </div>
     </div>
   );
 };
