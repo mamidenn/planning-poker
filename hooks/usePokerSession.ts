@@ -30,8 +30,6 @@ export const usePokerSession = (sessionId: string) => {
     [mutate, mutator]
   );
 
-  Pusher.logToConsole = true;
-
   useEffect(() => {
     if (!pusher) return;
     setChannel(pusher.subscribe(`presence-${sessionId}`));
