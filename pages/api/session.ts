@@ -30,7 +30,7 @@ export default async function handler(
       }
       res.status(200).json(data);
       return;
-    case "POST":
+    case "PUT":
       const { session, socketId } = req.body;
 
       if (!session || !socketId) {

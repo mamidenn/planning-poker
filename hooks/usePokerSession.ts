@@ -18,7 +18,7 @@ export const usePokerSession = (sessionId: string) => {
   const mutator = useCallback(
     async (session) =>
       await (
-        await axios.post("/api/session", { session, socketId })
+        await axios.put("/api/session", { session, socketId })
       ).data,
     [socketId]
   );
