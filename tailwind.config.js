@@ -13,6 +13,9 @@ module.exports = {
       },
     },
   },
+  corePlugins: {
+    aspectRatio: false,
+  },
   plugins: [
     plugin(({ addUtilities }) => {
       addUtilities({
@@ -21,5 +24,6 @@ module.exports = {
         },
       });
     }),
+    require("@tailwindcss/aspect-ratio"),
   ],
 };

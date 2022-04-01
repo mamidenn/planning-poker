@@ -17,18 +17,19 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
     <div className="container mx-auto flex flex-col justify-center items-center min-h-screen">
       <div className="flex flex-wrap justify-center gap-8">
         {members.map((m) => (
-          <PokerCard
-            key={m.id}
-            player={m.info.name}
-            value={session.votes[m.id] || ""}
-            state={
-              session.votes[m.id] === undefined
-                ? "unplayed"
-                : session.revealed
-                ? "faceUp"
-                : "faceDown"
-            }
-          />
+          <div key={m.id} className="w-36">
+            <PokerCard
+              player={m.info.name}
+              value={session.votes[m.id] || ""}
+              state={
+                session.votes[m.id] === undefined
+                  ? "unplayed"
+                  : session.revealed
+                  ? "faceUp"
+                  : "faceDown"
+              }
+            />
+          </div>
         ))}
       </div>
       <div className="flex gap-4 my-4">

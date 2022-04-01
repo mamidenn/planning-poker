@@ -14,7 +14,7 @@ export const HandOfCards: FC<Props> = (props) => {
         <button
           key={amount}
           className={
-            "disabled:opacity-0 disabled:-translate-y-20 disabled:pointer-events-none hover:-translate-y-10 translate-y-0 transition-all -ml-8 first:ml-0 shadow-md"
+            "w-24 disabled:opacity-0 disabled:-translate-y-20 disabled:pointer-events-none hover:-translate-y-10 translate-y-0 transition-all -ml-8 first:ml-0 shadow-md"
           }
           disabled={amount === props.selected}
           onClick={() => props.onSelection?.(amount)}
