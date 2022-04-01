@@ -55,7 +55,7 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
           Reset vote
         </Button>
       </div>
-      <div className="fixed bottom-0 translate-y-16">
+      <div className="fixed bottom-4">
         <HandOfCards
           values={[...fibonacci(10), "?"]}
           selected={session.votes[userId]}
