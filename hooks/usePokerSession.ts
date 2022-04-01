@@ -1,6 +1,6 @@
 import axios from "axios";
 import { PusherContext } from "context";
-import Pusher, { Channel, Members } from "pusher-js";
+import { Channel, Members } from "pusher-js";
 import { useContext, useState, useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { ChannelMember, PokerSession } from "types";
@@ -26,6 +26,7 @@ export const usePokerSession = (sessionId: string) => {
     (session: PokerSession) =>
       mutate(mutator, {
         optimisticData: session,
+        revalidate: false,
       }),
     [mutate, mutator]
   );
@@ -50,7 +51,9 @@ export const usePokerSession = (sessionId: string) => {
     channel.bind("pusher:member_removed", (member: ChannelMember) =>
       setMembers((prev) => prev.filter((m) => m.id !== member.id))
     );
-    channel.bind("update", (session: PokerSession) => mutate(session));
+    channel.bind("update", (session: PokerSession) =>
+      mutate(session, { revalidate: false })
+    );
   }, [channel, sessionId, mutate]);
 
   return { session, setSession, members };
