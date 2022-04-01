@@ -77,7 +77,10 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
               <td className="p-2">{c}</td>
             ))}
             <td className="p-2">
-              {mean(filter(session.votes, (v) => v >= 0)) || "?"}
+              {mean(filter(session.votes, (v) => v >= 0)).toLocaleString(
+                undefined,
+                { maximumFractionDigits: 1 }
+              ) || "?"}
             </td>
           </tbody>
         </table>
