@@ -5,7 +5,7 @@ type CardState = "faceUp" | "faceDown" | "unplayed";
 
 interface Props {
   player?: string;
-  value: string;
+  value: number;
   state: CardState;
 }
 
@@ -65,7 +65,7 @@ export const PokerCard: FC<Props> = (props) => {
           }
         )}
       >
-        {card[state](props.value)}
+        {card[state](props.value > 0 ? props.value.toString() : "?")}
       </div>
       {props.player && (
         <span className="font-semibold text-center overflow-hidden text-ellipsis whitespace-nowrap">
