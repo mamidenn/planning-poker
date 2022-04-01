@@ -9,20 +9,30 @@ interface Props {
   state: CardState;
 }
 
+const DynamicText: FC<{ text: string; className: string }> = (props) => {
+  return (
+    <svg viewBox="0 0 18 18" className={props.className}>
+      <text x="50%" y="85%" textAnchor="middle">
+        {props.text}
+      </text>
+    </svg>
+  );
+};
+
 const card: Record<CardState, (value: string) => JSX.Element> = {
   faceDown: () => (
     <div className="border-4 border-gray-50 outline outline-1 outline-gray-900/5 shadow-md rounded-lg bg-card-back" />
   ),
   faceUp: (value) => (
     <div className="flex outline outline-1 outline-gray-900/5 p-1 shadow-md rounded-lg bg-white">
-      <div className="flex flex-col w-full justify-between bg-gradient-to-br from-slate-400 to-slate-700 bg-clip-text text-transparent">
-        <span className="self-start text-sm">{value}</span>
-        <span className="self-center text-4xl font-semibold">{value}</span>
-        <span className="self-end text-sm rotate-180">{value}</span>
+      <div className="flex flex-col w-full justify-between fill-slate-500">
+        <DynamicText className="self-start w-1/6" text={value} />
+        <DynamicText className="self-center w-1/2" text={value} />
+        <DynamicText className="self-end rotate-180 w-1/6" text={value} />
       </div>
     </div>
   ),
-  unplayed: () => <div className="bg-gray-500/30 blur-sm rounded-lg" />,
+  unplayed: () => <div className="border-4 rounded-lg" />,
 };
 
 export const PokerCard: FC<Props> = (props) => {
