@@ -60,7 +60,8 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
         </Button>
       </div>
       <div
-        className={classNames("transition-opacity", {
+        className={classNames({
+          "transition-opacity": session.revealed,
           "opacity-0": !session.revealed,
         })}
       >
