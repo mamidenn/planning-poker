@@ -36,7 +36,7 @@ const Register: NextPage = ({
         autoComplete="off"
         method="post"
         action="/api/register"
-        className="flex flex-col gap-2 outline outline-1 outline-gray-900/5 rounded-lg shadow-lg p-8 bg-white"
+        className="flex flex-col gap-2 text-gray-900 outline outline-1 outline-gray-900/5 rounded-lg shadow-lg p-8 bg-white"
       >
         <label htmlFor="name">Please choose a name:</label>
         <input
