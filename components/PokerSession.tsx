@@ -16,7 +16,7 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
   if (!session) return <></>;
 
   return (
-    <div className="container mx-auto flex flex-col justify-center items-center min-h-screen gap-4">
+    <div className="container mx-auto flex flex-col justify-center items-center min-h-screen gap-4 pt-4 pb-40">
       <div className="flex flex-wrap justify-center gap-8">
         {members.map((m) => (
           <div key={m.id} className="w-36">
