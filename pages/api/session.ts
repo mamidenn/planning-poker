@@ -30,8 +30,9 @@ export default async function handler(
   }
   if (req.method === "PUT") {
     const { session, socketId } = req.body;
+    const { user_id } = JSON.parse(req.cookies.user);
 
-    if (!session || !socketId) {
+    if (!session || !socketId || !user_id) {
       res.status(400).end();
       return;
     }
@@ -41,7 +42,7 @@ export default async function handler(
       {
         $set: {
           revealed: session.revealed,
-          votes: session.votes,
+          ["votes." + user_id]: session.votes[user_id],
         },
       },
       {

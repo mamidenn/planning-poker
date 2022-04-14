@@ -26,7 +26,7 @@ export const usePokerSession = (sessionId: string) => {
     (session: PokerSession) =>
       mutate(mutator, {
         optimisticData: session,
-        revalidate: false,
+        revalidate: true,
       }),
     [mutate, mutator]
   );
