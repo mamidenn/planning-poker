@@ -56,7 +56,7 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
             })
           }
         >
-          Reset vote
+          Reset all votes
         </Button>
       </div>
       <div

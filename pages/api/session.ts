@@ -37,13 +37,20 @@ export default async function handler(
       return;
     }
 
+    const set = session.votes[user_id]
+      ? {
+          revealed: session.revealed,
+          ["votes." + user_id]: session.votes[user_id],
+        }
+      : {
+          revealed: false,
+          votes: {},
+        };
+
     const updateResult = await sessions.findOneAndUpdate(
       { id: session.id },
       {
-        $set: {
-          revealed: session.revealed,
-          ["votes." + user_id]: session.votes[user_id],
-        },
+        $set: set,
       },
       {
         upsert: true,

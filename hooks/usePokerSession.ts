@@ -52,7 +52,7 @@ export const usePokerSession = (sessionId: string) => {
       setMembers((prev) => prev.filter((m) => m.id !== member.id))
     );
     channel.bind("update", (session: PokerSession) =>
-      mutate(session, { revalidate: false })
+      mutate(session, { revalidate: true })
     );
   }, [channel, sessionId, mutate]);
 
