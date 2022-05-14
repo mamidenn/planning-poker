@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import Head from "next/head";
 import React, { FC, useEffect, useState } from "react";
 
 type CardState = "faceUp" | "faceDown" | "unplayed";
@@ -56,23 +57,28 @@ export const PokerCard: FC<Props> = (props) => {
   }, [state, props.state]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <div
-        className={classNames(
-          "transition-transform ease-linear aspect-w-2 aspect-h-3",
-          {
-            "rotate-y-180": transitioning,
-          }
+    <>
+      <Head>
+        <link rel="preload" href="/card-back.svg" as="image" />
+      </Head>
+      <div className="flex flex-col gap-2">
+        <div
+          className={classNames(
+            "transition-transform ease-linear aspect-w-2 aspect-h-3",
+            {
+              "rotate-y-180": transitioning,
+            }
+          )}
+        >
+          {card[state](props.value?.toString() ?? "?")}
+        </div>
+        {props.player && (
+          <span className="font-semibold text-center overflow-hidden text-ellipsis whitespace-nowrap">
+            {props.player}
+          </span>
         )}
-      >
-        {card[state](props.value?.toString() ?? "?")}
       </div>
-      {props.player && (
-        <span className="font-semibold text-center overflow-hidden text-ellipsis whitespace-nowrap">
-          {props.player}
-        </span>
-      )}
-    </div>
+    </>
   );
 };
 
