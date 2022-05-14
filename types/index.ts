@@ -1,5 +1,5 @@
 export interface Votes {
-  [id: string]: number;
+  [id: string]: number | null;
 }
 
 export interface PokerSession {

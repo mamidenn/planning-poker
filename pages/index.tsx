@@ -17,10 +17,9 @@ const Main: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = (
   return (
     <form
       method="post"
-      action="/api/session"
+      action={`/api/sessions/${props.randomId}`}
       className="flex justify-center items-center min-h-screen"
     >
-      <input type="hidden" name="sessionId" value={props.randomId} />
       <Button primary type="submit">
         Create a new Planning Poker Session!
       </Button>

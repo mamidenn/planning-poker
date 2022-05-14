@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
-  const { session, setSession, members } = usePokerSession(sessionId);
+  const { session, members, reset, flip, vote } = usePokerSession(sessionId);
 
   if (!session) return <></>;
 
@@ -35,29 +35,10 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
         ))}
       </div>
       <div className="flex gap-4 my-4">
-        <Button
-          primary
-          onClick={() =>
-            isEmpty(session.votes) ||
-            setSession({
-              ...session,
-              revealed: !session.revealed,
-            })
-          }
-        >
+        <Button primary onClick={() => isEmpty(session.votes) || flip()}>
           Flip cards
         </Button>
-        <Button
-          onClick={() =>
-            setSession({
-              ...session,
-              revealed: false,
-              votes: {},
-            })
-          }
-        >
-          Reset all votes
-        </Button>
+        <Button onClick={() => reset()}>Reset all votes</Button>
       </div>
       <div
         className={classNames({
@@ -68,35 +49,37 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
         <h2 className="text-2xl">Results:</h2>
         <table className="text-xl text-center">
           <thead className="border-b-2">
-            {map(groupBy(session.votes), (v) => (
-              <th className="p-2">{v[0] > 0 ? v[0] : "?"}</th>
-            ))}
-            <th className="p-2">&#8709;</th>
+            <tr>
+              {map(groupBy(session.votes), (v, k) => (
+                <th className="p-2" key={k}>
+                  {v[0] ?? "?"}
+                </th>
+              ))}
+              <th className="p-2">&#8709;</th>
+            </tr>
           </thead>
           <tbody>
-            {map(countBy(session.votes), (c) => (
-              <td className="p-2">{c}</td>
-            ))}
-            <td className="p-2">
-              {mean(filter(session.votes, (v) => v >= 0)).toLocaleString(
-                undefined,
-                { maximumFractionDigits: 1 }
-              ) || "?"}
-            </td>
+            <tr>
+              {map(countBy(session.votes), (c, k) => (
+                <td className="p-2" key={k}>
+                  {c}
+                </td>
+              ))}
+              <td className="p-2">
+                {(
+                  mean(filter(session.votes, (v) => v !== null)) || "?"
+                ).toLocaleString(undefined, { maximumFractionDigits: 1 })}
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
 
       <div className="fixed bottom-4">
         <HandOfCards
-          values={[...fibonacci(10), -1]}
+          values={[...fibonacci(10), null]}
           selected={session.votes[userId]}
-          onSelection={(value) =>
-            setSession({
-              ...session,
-              votes: { ...session.votes, [userId]: value },
-            })
-          }
+          onSelection={(value) => vote({ [userId]: value })}
         />
       </div>
     </div>

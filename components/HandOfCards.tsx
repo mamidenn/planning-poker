@@ -2,9 +2,9 @@ import React, { FC } from "react";
 import { PokerCard } from "components";
 
 type Props = {
-  values: number[];
-  selected?: number;
-  onSelection?: (selected: number) => void;
+  values: (number | null)[];
+  selected: number | null;
+  onSelection?: (selected: number | null) => void;
 };
 
 export const HandOfCards: FC<Props> = (props) => {

@@ -12,23 +12,58 @@ export const usePokerSession = (sessionId: string) => {
   const [channel, setChannel] = useState<Channel>();
   const [members, setMembers] = useState<ChannelMember[]>([]);
   const { data: session, mutate } = useSWR<PokerSession>(
-    () => "/api/session?sessionId=" + sessionId,
+    () => `/api/sessions/${sessionId}`,
     fetcher
   );
-  const mutator = useCallback(
+  const resetter = useCallback(
+    async () =>
+      await (
+        await axios.post(`/api/sessions/${sessionId}/reset`, { socketId })
+      ).data,
+    [sessionId, socketId]
+  );
+  const flipper = useCallback(
+    async () =>
+      await (
+        await axios.post(`/api/sessions/${sessionId}/flip`, { socketId })
+      ).data,
+    [sessionId, socketId]
+  );
+  const voter = useCallback(
     async (session) =>
       await (
-        await axios.put("/api/session", { session, socketId })
+        await axios.post(`/api/sessions/${sessionId}/vote`, {
+          session,
+          socketId,
+        })
       ).data,
-    [socketId]
+    [sessionId, socketId]
   );
-  const setSession = useCallback(
-    (session: PokerSession) =>
-      mutate(mutator, {
-        optimisticData: session,
-        revalidate: true,
+  const reset = useCallback(
+    () =>
+      mutate(resetter, {
+        optimisticData: { ...session!, revealed: false, votes: {} },
+        revalidate: false,
       }),
-    [mutate, mutator]
+    [mutate, resetter, session]
+  );
+  const flip = useCallback(
+    () =>
+      session &&
+      mutate(flipper, {
+        optimisticData: { ...session, revealed: session.revealed },
+        revalidate: false,
+      }),
+    [flipper, mutate, session]
+  );
+  const vote = useCallback(
+    (vote) =>
+      session &&
+      mutate(voter, {
+        optimisticData: { ...session, votes: { ...session.votes, ...vote } },
+        revalidate: false,
+      }),
+    [mutate, session, voter]
   );
 
   useEffect(() => {
@@ -52,9 +87,9 @@ export const usePokerSession = (sessionId: string) => {
       setMembers((prev) => prev.filter((m) => m.id !== member.id))
     );
     channel.bind("update", (session: PokerSession) =>
-      mutate(session, { revalidate: true })
+      mutate(session, { revalidate: false })
     );
   }, [channel, sessionId, mutate]);
 
-  return { session, setSession, members };
+  return { session, members, vote, flip, reset };
 };
