@@ -77,7 +77,7 @@ export const PokerSession: FC<Props> = ({ sessionId, userId }) => {
 
       <div className="fixed bottom-4">
         <HandOfCards
-          values={[...fibonacci(10), null]}
+          values={[...fibonacci(6), null]}
           selected={session.votes[userId]}
           onSelection={(value) => vote({ [userId]: value })}
         />
