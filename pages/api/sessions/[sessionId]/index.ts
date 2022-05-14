@@ -42,7 +42,7 @@ export default async function handler(
       return;
     }
 
-    res.redirect("/session/" + sessionId);
+    res.redirect("/sessions/" + sessionId);
     return;
   }
   res.status(400).end();
