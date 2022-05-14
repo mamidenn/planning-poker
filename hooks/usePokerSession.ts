@@ -51,7 +51,7 @@ export const usePokerSession = (sessionId: string) => {
     () =>
       session &&
       mutate(flipper, {
-        optimisticData: { ...session, revealed: session.revealed },
+        optimisticData: { ...session, revealed: !session.revealed },
         revalidate: false,
       }),
     [flipper, mutate, session]
