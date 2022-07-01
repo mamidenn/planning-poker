@@ -2,7 +2,11 @@
 module.exports = {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		extend: {}
+		extend: {
+			backgroundImage: {
+				'card-back-pattern': "url('/images/card-back.svg')"
+			}
+		}
 	},
 	plugins: []
 };

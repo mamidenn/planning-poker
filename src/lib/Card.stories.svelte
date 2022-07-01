@@ -10,8 +10,7 @@
 		label: { control: 'text' },
 		orientation: {
 			control: 'select',
-			options: ['Face Up', 'Face Down'],
-			mapping: { 'Face Up': 'faceUp', 'Face Down': 'faceDown' }
+			options: ['faceUp', 'faceDown']
 		}
 	}}
 />
@@ -20,6 +19,6 @@
 	<Card {...args} />
 </Template>
 
-<Story name="Number" args={{ label: '8', orientation: 'Face Up' }} />
-<Story name="T-Shirt Size" args={{ label: 'XL', orientation: 'Face Up' }} />
-<Story name="Face Down" args={{ label: 'S', orientation: 'Face Down' }} />
+<Story name="Number" args={{ label: '8', orientation: 'faceUp' }} />
+<Story name="T-Shirt Size" args={{ label: 'XL', orientation: 'faceUp' }} />
+<Story name="Face Down" args={{ label: 'S', orientation: 'faceDown' }} />

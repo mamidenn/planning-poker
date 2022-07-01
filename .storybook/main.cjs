@@ -12,5 +12,6 @@ module.exports = {
 	framework: '@storybook/svelte',
 	svelteOptions: {
 		preprocess: preprocess({ postcss: true })
-	}
+	},
+	staticDirs: ['../static']
 };

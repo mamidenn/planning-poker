@@ -1,20 +1,55 @@
 <script lang="ts">
-	export let label = 'Card';
-	export let orientation: 'faceUp' | 'faceDown' = 'faceUp';
+	import type { TransitionConfig } from 'svelte/transition';
+	type Orientation = 'faceUp' | 'faceDown';
+	export let label = 'C';
+	export let orientation: Orientation = 'faceUp';
+
+	const flip: (node: Element, params: any) => TransitionConfig = (_, { duration = 300 }) => ({
+		duration,
+		css: (_, u) => `transform: rotateY(${Math.min(0.5, u) * 180}deg)`
+	});
 </script>
 
-<div
-	class="flex flex-col justify-center items-center w-24 h-36 border-2 border-purple-500 rounded-md shadow-md p-1"
->
+<div class="transition-enforcer">
 	{#if orientation === 'faceUp'}
-		<div class="text-5xl font-semibold text-purple-500 ">{label}</div>
+		<div class="card" in:flip out:flip>
+			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+				<defs>
+					<linearGradient id="g" gradientTransform="rotate(45)">
+						<stop stop-color="rgb(168 85 247)" />
+						<stop stop-color="rgb(6 182 212)" offset="1" />
+					</linearGradient>
+					<mask id="m">
+						<text
+							x="50%"
+							y="50%"
+							dy=".12em"
+							fill="white"
+							text-anchor="middle"
+							dominant-baseline="middle"
+							class="text-5xl font-semibold">{label}</text
+						>
+					</mask>
+				</defs>
+				<rect width="100%" height="100%" fill="url(#g)" mask="url(#m)" />
+			</svg>
+		</div>
 	{:else}
-		<div class="h-full w-full rounded-sm card-back" />
+		<div class="card" in:flip out:flip>
+			<div class="h-full w-full rounded-sm bg-card-back-pattern" />
+		</div>
 	{/if}
 </div>
 
 <style>
-	.card-back {
-		background-image: url("data:image/svg+xml,<svg id='patternId' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'><defs><pattern id='a' patternUnits='userSpaceOnUse' width='40' height='20' patternTransform='scale(1) rotate(45)'><rect x='0' y='0' width='100%' height='100%' fill='hsla(0,0%,100%,1)'/><path d='M40 0L20-10V0l20 10zm0 10L20 0v10l20 10zm0 10L20 10v10l20 10zM0 20l20-10v10L0 30zm0-10L20 0v10L0 20zM0 0l20-10V0L0 10z'  stroke-width='2' stroke='rgb(168 85 247)' fill='none'/></pattern></defs><rect width='800%' height='800%' transform='translate(0,0)' fill='url(%23a)'/></svg>");
+	.transition-enforcer {
+		display: grid;
+	}
+	.transition-enforcer > * {
+		grid-column: 1/2;
+		grid-row: 1/2;
+	}
+	.card {
+		@apply flex flex-col justify-center items-center w-24 h-36 border-2 border-purple-500 rounded-md shadow-md p-1;
 	}
 </style>
