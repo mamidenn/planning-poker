@@ -7,7 +7,9 @@
 	title="Barchart"
 	component={Barchart}
 	argTypes={{
-		bars: {}
+		bars: {
+			description: 'Bar labels and values'
+		}
 	}}
 />
 
@@ -15,4 +17,4 @@
 	<Barchart {...args} />
 </Template>
 
-<Story name="Foo" args={{ bars: { S: 3, M: 2, L: 5, XL: 1 } }} />
+<Story name="T-Shirt Sizes" args={{ bars: { XS: 0, S: 3, M: 2, L: 5, XL: 1 } }} />

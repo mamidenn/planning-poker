@@ -5,24 +5,52 @@
 	$: maxAmount = Math.max(...Object.values(bars));
 </script>
 
-<div
-	class="grid gap-2 h-44 relative"
-	style="grid-template-rows: 1fr auto; grid-template-columns: repeat({Object.keys(bars)
-		.length},auto)"
->
-	<div class="row-start-1 col-span-full relative">
-		{#each range(maxAmount + 1) as tick}
-			<div
-				class="absolute w-full ring-1 ring-purple-900/10"
-				style="bottom: {(tick * 100) / maxAmount}%"
-			/>
-		{/each}
-	</div>
+<div class="root" style="--max-amount: {maxAmount}; --num-bars: {Object.keys(bars).length};">
+	{#each range(maxAmount) as tick}
+		<p class="y-axis" style="--tick: {tick};">
+			{tick + 1}
+		</p>
+		<div class="tick" style="--tick: {tick}" />
+	{/each}
 	{#each Object.entries(bars) as [value, amount], index}
 		<div
-			class="border-2 rounded-t-md border-purple-500 bg-gradient-to-br from-purple-500/75 to-cyan-500/75 row-start-1 self-end hover:shadow-xl transition-all z-10"
-			style="height: {(amount * 100) / maxAmount}%; grid-column-start: {index + 1}"
-		/>
-		<p class="text-lg font-semibold text-purple-500 row-start-2 text-center">{value}</p>
+			class="bar"
+			style="--amount: {amount}; --bar-index: {index}; {amount === 0 && 'visibility: collapse'}"
+		>
+			<div class="inner" />
+		</div>
+		<p class="x-axis" style="--bar-index: {index};">
+			{value}
+		</p>
 	{/each}
 </div>
+
+<style>
+	.root {
+		@apply grid gap-x-2;
+		grid-template-rows: repeat(var(--max-amount), auto) max-content;
+		grid-template-columns: max-content repeat(var(--num-bars), max-content);
+	}
+	.bar {
+		@apply w-24 border-2 rounded-t-md border-purple-500 z-10 p-1;
+		grid-row: calc(var(--max-amount) - var(--amount) + 1) / span max(var(--amount), 1);
+		grid-column-start: calc(var(--bar-index) + 2);
+	}
+	.bar .inner {
+		@apply h-full w-full rounded-t-sm bg-card-back-pattern;
+	}
+	.x-axis {
+		@apply text-lg font-semibold text-purple-500 text-center py-2;
+		grid-column-start: calc(var(--bar-index) + 2);
+		grid-row-start: calc(var(--max-amount) + 1);
+	}
+	.y-axis {
+		@apply col-start-1 font-medium text-purple-500 text-end self-center px-2;
+		grid-row-start: calc(var(--max-amount) - var(--tick));
+	}
+	.tick {
+		@apply border-b-2 border-purple-500/20;
+		grid-row-start: calc(var(--tick) + 1);
+		grid-column: 2 / span var(--num-bars);
+	}
+</style>
