@@ -5,21 +5,23 @@
 	$: maxAmount = Math.max(...Object.values(bars));
 </script>
 
-<div class="root" style="--max-amount: {maxAmount}; --num-bars: {Object.keys(bars).length};">
+<div class="root" style:--max-amount={maxAmount} style:--num-bars={Object.keys(bars).length}>
 	{#each range(maxAmount) as tick}
-		<p class="y-axis" style="--tick: {tick};">
+		<p class="y-axis" style:--tick={tick}>
 			{tick + 1}
 		</p>
-		<div class="tick" style="--tick: {tick}" />
+		<div class="tick" style:--tick={tick} />
 	{/each}
 	{#each Object.entries(bars) as [value, amount], index}
 		<div
 			class="bar"
-			style="--amount: {amount}; --bar-index: {index}; {amount === 0 && 'visibility: collapse'}"
+			class:collapsed={amount === 0}
+			style:--amount={amount}
+			style:--bar-index={index}
 		>
 			<div class="inner" />
 		</div>
-		<p class="x-axis" style="--bar-index: {index};">
+		<p class="x-axis" style:--bar-index={index}>
 			{value}
 		</p>
 	{/each}
@@ -29,7 +31,7 @@
 	.root {
 		@apply grid gap-x-2;
 		grid-template-rows: repeat(var(--max-amount), auto) max-content;
-		grid-template-columns: max-content repeat(var(--num-bars), max-content);
+		grid-template-columns: repeat(calc(var(--num-bars) + 1), max-content);
 	}
 	.bar {
 		@apply w-24 border-2 rounded-t-md border-purple-500 z-10 p-1;
@@ -52,5 +54,8 @@
 		@apply border-b-2 border-purple-500/20;
 		grid-row-start: calc(var(--tick) + 1);
 		grid-column: 2 / span var(--num-bars);
+	}
+	.collapsed {
+		visibility: collapse;
 	}
 </style>
