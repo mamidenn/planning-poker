@@ -15,7 +15,7 @@
 	{#each Object.entries(bars) as [value, amount], index}
 		<div
 			class="bar"
-			class:collapsed={amount === 0}
+			class:invisible={amount === 0}
 			style:--amount={amount}
 			style:--bar-index={index}
 		>
@@ -54,8 +54,5 @@
 		@apply border-b-2 border-purple-500/20;
 		grid-row-start: calc(var(--tick) + 1);
 		grid-column: 2 / span var(--num-bars);
-	}
-	.collapsed {
-		visibility: collapse;
 	}
 </style>
