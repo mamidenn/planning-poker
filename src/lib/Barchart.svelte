@@ -2,7 +2,7 @@
 	import { range } from 'lodash';
 	export let bars: { [value: string]: number };
 
-	$: maxAmount = Math.max(...Object.values(bars));
+	$: maxAmount = Math.max(...Object.values(bars), 0);
 </script>
 
 <div class="root" style:--max-amount={maxAmount} style:--num-bars={Object.keys(bars).length}>
