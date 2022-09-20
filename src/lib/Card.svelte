@@ -1,13 +1,24 @@
+<script lang="ts" context="module">
+	export type Orientation = 'faceUp' | 'faceDown';
+</script>
+
 <script lang="ts">
+	import { getContext } from 'svelte';
+
 	import type { TransitionConfig } from 'svelte/transition';
 	import { uid } from 'uid';
-	type Orientation = 'faceUp' | 'faceDown';
-	export let label = 'C';
+	import type { AnimationContext } from './CardDisplay.svelte';
+	export let label: string | number = 'C';
 	export let orientation: Orientation = 'faceUp';
+
+	const animation = getContext<AnimationContext>('animation');
 
 	const id = uid();
 
-	const rotate: (node: Element, params: any) => TransitionConfig = (_, { duration = 300 }) => ({
+	const rotate: (node: Element, params: any) => TransitionConfig = (
+		_,
+		{ duration = animation.duration }
+	) => ({
 		duration,
 		css: (_, u) => `transform: rotateY(${Math.min(0.5, u) * 180}deg)`
 	});
