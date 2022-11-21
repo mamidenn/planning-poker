@@ -2,7 +2,7 @@ import { supabase } from '$lib/supabase';
 import { filter, Observable, BehaviorSubject, delayWhen } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import Cookies from 'js-cookie';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import {
 	writable,
 	readable,
