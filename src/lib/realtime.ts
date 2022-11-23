@@ -1,8 +1,9 @@
 import { supabase } from '$lib/supabase';
-import { filter, Observable, BehaviorSubject, delayWhen } from 'rxjs';
-import { writable, readable, type Readable } from 'svelte/store';
+import { filter, BehaviorSubject, delayWhen, map, of } from 'rxjs';
 import { last } from 'lodash';
 import type { Session } from './sessioncookie';
+import type { Updater } from 'svelte/store';
+import { browser } from '$app/environment';
 
 interface PresenceState {
 	[key: string]: Presence[];
@@ -19,35 +20,42 @@ interface UserData {
 
 type ConnectionStatus = 'SUBSCRIBED' | unknown;
 
-function fromReadable<T>(store: Readable<T>) {
-	return new Observable<T>((subscriber) => {
-		return store.subscribe((data) => {
-			subscriber.next(data);
-		});
-	});
+class SvelteSubject<T> extends BehaviorSubject<T> {
+	set(value: T): void {
+		this.next(value);
+	}
+	update(updater: Updater<T>): void {
+		this.next(updater(this.value));
+	}
 }
 
 export const realtime = (channelName: string, session: Session) => {
+	if (!browser) {
+		return {
+			user: new SvelteSubject<UserData>({ id: '', name: '' }),
+			users: of<UserData[]>([])
+		};
+	}
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('');
-	const presenceState = writable<PresenceState>({});
-	const user = writable<UserData>(session);
-	const users = readable<UserData[]>([], (set) =>
-		presenceState.subscribe((data) => {
-			set(Object.values(data).map((presences) => last(presences)) as unknown as UserData[]);
-		})
+	const presenceState = new BehaviorSubject<PresenceState>({});
+	const user = new SvelteSubject<UserData>(session);
+	const users = presenceState.pipe(
+		map(
+			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
+		)
 	);
 
 	const channel = supabase.channel(channelName, {
 		config: { presence: { key: session.id } }
 	});
 
-	fromReadable(user)
+	user
 		.pipe(delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED'))))
 		.subscribe((user) => channel.track(user));
 
 	channel
 		.on('presence', { event: 'sync' }, () => {
-			presenceState.set(channel.presenceState());
+			presenceState.next(channel.presenceState());
 		})
 		.subscribe(async (status: ConnectionStatus) => {
 			connectionStatus.next(status);

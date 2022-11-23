@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	export const prerender = false;
+	export const prerender = true;
 </script>
 
 <script lang="ts">
@@ -11,7 +11,7 @@
 	const { user, users } = realtime(data.id, data.session);
 </script>
 
-<h1>Hello {$user.name}! This is session {data.id}.</h1>
+<h1>Hello {data.session.name}! This is session {data.id}.</h1>
 
 <input type="number" bind:value={$user.vote} />
 <table>
