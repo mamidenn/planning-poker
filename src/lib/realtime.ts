@@ -1,17 +1,8 @@
 import { supabase } from '$lib/supabase';
 import { filter, Observable, BehaviorSubject, delayWhen } from 'rxjs';
-import { v4 as uuid } from 'uuid';
-import Cookies from 'js-cookie';
-import { browser } from '$app/environment';
-import {
-	writable,
-	readable,
-	type Readable,
-	type StartStopNotifier,
-	type Writable,
-	get
-} from 'svelte/store';
+import { writable, readable, type Readable } from 'svelte/store';
 import { last } from 'lodash';
+import type { Session } from './sessioncookie';
 
 interface PresenceState {
 	[key: string]: Presence[];
@@ -21,6 +12,7 @@ interface Presence {
 	[key: string]: unknown;
 }
 interface UserData {
+	id: string;
 	name: string;
 	vote?: number;
 }
@@ -29,38 +21,24 @@ type ConnectionStatus = 'SUBSCRIBED' | unknown;
 
 function fromReadable<T>(store: Readable<T>) {
 	return new Observable<T>((subscriber) => {
-		store.subscribe((data) => {
+		return store.subscribe((data) => {
 			subscriber.next(data);
 		});
 	});
 }
 
-function cookieWriteable<T>(key: string, value?: T, start?: StartStopNotifier<T>): Writable<T> {
-	const cookie = Cookies.get(key);
-	const initial = cookie ? (JSON.parse(cookie) as T) : value;
-	const store = writable<T>(initial, start);
-	store.subscribe((value) => {
-		if (browser && value) {
-			Cookies.set(key, JSON.stringify(value));
-		}
-	});
-	return store;
-}
-
-const sessionId = cookieWriteable('session_id', uuid());
-
-export const realtime = (channelName: string) => {
-	const user = cookieWriteable<UserData>('user');
+export const realtime = (channelName: string, session: Session) => {
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('');
 	const presenceState = writable<PresenceState>({});
-	const users = readable<UserData[]>([], (set) => {
-		presenceState.subscribe((data) =>
-			set(Object.values(data).map((session) => last(session)) as unknown as UserData[])
-		);
-	});
+	const user = writable<UserData>(session);
+	const users = readable<UserData[]>([], (set) =>
+		presenceState.subscribe((data) => {
+			set(Object.values(data).map((presences) => last(presences)) as unknown as UserData[]);
+		})
+	);
 
 	const channel = supabase.channel(channelName, {
-		config: { presence: { key: get(sessionId) } }
+		config: { presence: { key: session.id } }
 	});
 
 	fromReadable(user)
