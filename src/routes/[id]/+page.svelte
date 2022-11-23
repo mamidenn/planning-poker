@@ -15,7 +15,8 @@
 
 <input type="number" bind:value={$user.vote} />
 <table>
-	{#each $users as { name, vote }}
+	<tr><td>{data.session.name}</td><td>{$user.vote || ''}</td></tr>
+	{#each $users.filter((u) => u.id !== $user.id) as { name, vote }}
 		<tr><td>{name}</td><td>{vote || ''}</td></tr>
 	{/each}
 </table>

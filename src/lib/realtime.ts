@@ -1,5 +1,5 @@
 import { supabase } from '$lib/supabase';
-import { filter, BehaviorSubject, delayWhen, map, of } from 'rxjs';
+import { filter, BehaviorSubject, delayWhen, map, of, debounceTime } from 'rxjs';
 import { last } from 'lodash';
 import type { Session } from './sessioncookie';
 import type { Updater } from 'svelte/store';
@@ -18,7 +18,7 @@ interface UserData {
 	vote?: number;
 }
 
-type ConnectionStatus = 'SUBSCRIBED' | unknown;
+type ConnectionStatus = 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR';
 
 class SvelteSubject<T> extends BehaviorSubject<T> {
 	set(value: T): void {
@@ -36,7 +36,7 @@ export const realtime = (channelName: string, session: Session) => {
 			users: of<UserData[]>([])
 		};
 	}
-	const connectionStatus = new BehaviorSubject<ConnectionStatus>('');
+	const connectionStatus = new BehaviorSubject<ConnectionStatus>('CLOSED');
 	const presenceState = new BehaviorSubject<PresenceState>({});
 	const user = new SvelteSubject<UserData>(session);
 	const users = presenceState.pipe(
@@ -44,20 +44,22 @@ export const realtime = (channelName: string, session: Session) => {
 			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
 		)
 	);
-
 	const channel = supabase.channel(channelName, {
 		config: { presence: { key: session.id } }
 	});
 
 	user
-		.pipe(delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED'))))
+		.pipe(
+			debounceTime(500),
+			delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED')))
+		)
 		.subscribe((user) => channel.track(user));
 
 	channel
 		.on('presence', { event: 'sync' }, () => {
 			presenceState.next(channel.presenceState());
 		})
-		.subscribe(async (status: ConnectionStatus) => {
+		.subscribe(async (status) => {
 			connectionStatus.next(status);
 		});
 
