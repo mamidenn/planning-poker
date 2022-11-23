@@ -8,14 +8,14 @@
 
 	export let data: PageServerData;
 
-	const { user, users } = realtime(data.id, data.session);
+	const { user, users } = realtime(data.id, data.user);
 </script>
 
-<h1>Hello {data.session.name}! This is session {data.id}.</h1>
+<h1>Hello {data.user.name}! This is session {data.id}.</h1>
 
 <input type="number" bind:value={$user.vote} />
 <table>
-	<tr><td>{data.session.name}</td><td>{$user.vote || ''}</td></tr>
+	<tr><td>{data.user.name}</td><td>{$user.vote || ''}</td></tr>
 	{#each $users.filter((u) => u.id !== $user.id) as { name, vote }}
 		<tr><td>{name}</td><td>{vote || ''}</td></tr>
 	{/each}
