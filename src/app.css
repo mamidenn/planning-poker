@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+	font-family: 'Sansita Swashed';
+	font-style: normal;
+	font-weight: 600;
+	font-variation-settings: 'wght' 600;
+	src: local('Sansita Swashed'), url('/fonts/SansitaSwashed-VariableFont_wght.woff') format('woff');
+}

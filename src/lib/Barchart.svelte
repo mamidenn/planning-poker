@@ -27,7 +27,7 @@
 	{/each}
 </div>
 
-<style>
+<style lang="postcss">
 	.root {
 		@apply grid gap-x-2;
 		grid-template-rows: repeat(var(--max-amount), auto) max-content;

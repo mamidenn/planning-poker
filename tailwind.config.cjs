@@ -5,6 +5,9 @@ module.exports = {
 		extend: {
 			backgroundImage: {
 				'card-back-pattern': "url('/images/card-back.svg')"
+			},
+			fontFamily: {
+				display: '"Sansita Swashed"'
 			}
 		}
 	},

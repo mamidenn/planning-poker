@@ -15,11 +15,8 @@
 
 	const id = uid();
 
-	const rotate: (node: Element, params: any) => TransitionConfig = (
-		_,
-		{ duration = animation.duration }
-	) => ({
-		duration,
+	const rotate: (node: Element) => TransitionConfig = () => ({
+		duration: animation.duration,
 		css: (_, u) => `transform: rotateY(${Math.min(0.5, u) * 180}deg)`
 	});
 </script>
