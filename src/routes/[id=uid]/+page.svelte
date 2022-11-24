@@ -20,7 +20,7 @@
 
 <CardDisplay
 	cards={{
-		[$user.name]: $user.vote,
+		[data.user.name]: $user.vote,
 		...$users
 			.filter(({ id }) => id !== $user.id)
 			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})

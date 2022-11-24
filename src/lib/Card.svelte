@@ -55,7 +55,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	.transition-enforcer {
 		display: grid;
 	}

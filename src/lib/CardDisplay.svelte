@@ -31,7 +31,7 @@
 	>Click me!</button
 >
 
-<style>
+<style lang="postcss">
 	.label {
 		@apply col-start-1 font-medium text-purple-500 text-end self-center px-2;
 	}
