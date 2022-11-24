@@ -5,6 +5,7 @@
 <script lang="ts">
 	import { realtime } from '$lib/realtime';
 	import type { PageServerData } from './$types';
+	import CardDisplay from '$lib/CardDisplay.svelte';
 
 	export let data: PageServerData;
 
@@ -16,9 +17,12 @@
 {#each [1, 2, 3, 5, 8, 13] as vote}
 	<button on:click={() => ($user.vote = vote)}>{vote}</button>
 {/each}
-<table>
-	<tr><td>{data.user.name}</td><td>{$user.vote || ''}</td></tr>
-	{#each $users.filter((u) => u.id !== $user.id) as { name, vote }}
-		<tr><td>{name}</td><td>{vote || ''}</td></tr>
-	{/each}
-</table>
+
+<CardDisplay
+	cards={{
+		[$user.name]: $user.vote,
+		...$users
+			.filter(({ id }) => id !== $user.id)
+			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})
+	}}
+/>

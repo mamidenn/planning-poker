@@ -1,6 +1,6 @@
 import { invalid, redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { user } from '$lib/user';
+import { namePattern, user } from '$lib/user';
 
 export const actions: Actions = {
 	default: async ({ cookies, request, url }) => {
@@ -8,7 +8,9 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const name = data.get('name')?.toString();
 
-		if (!name) return invalid(400, { name, missing: true });
+		if (!name) return invalid(400, { name, validation: { name: 'Cannot be empty.' } });
+		if (!namePattern.test(name))
+			return invalid(400, { name, validation: { name: 'Invalid name.' } });
 		signup(name);
 		throw redirect(303, url.searchParams.get('url') || '/');
 	}

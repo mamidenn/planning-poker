@@ -6,7 +6,7 @@
 
 <h1>Login</h1>
 <form method="post">
-	{#if form?.missing}Set a name, imbecile!{/if}
+	{#if form?.validation?.name}{form.validation.name}{/if}
 	<input name="name" type="text" placeholder="Name" />
 	<button>Login</button>
 </form>
