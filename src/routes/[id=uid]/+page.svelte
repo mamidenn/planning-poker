@@ -7,7 +7,8 @@
 	import type { PageServerData } from './$types';
 	import CardDisplay from '$lib/CardDisplay.svelte';
 	import Button from '$lib/Button.svelte';
-	import { random, range } from 'lodash';
+	import _ from 'lodash';
+	const { random, range } = _;
 
 	export let data: PageServerData;
 
