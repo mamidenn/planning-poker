@@ -1,8 +1,10 @@
 <script lang="ts">
 	export let type: 'submit' | 'reset' | 'button' | undefined = 'button';
+	export const click = () => button.click();
+	let button: HTMLButtonElement;
 </script>
 
-<button on:click {type}><slot /></button>
+<button on:click bind:this={button} {type}><slot /></button>
 
 <style lang="postcss">
 	button {

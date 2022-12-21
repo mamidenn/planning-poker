@@ -23,5 +23,9 @@ export const user = (cookies: Cookies) => {
 		cookies.set('session', JSON.stringify(user));
 	};
 
-	return { get, signup };
+	const logout = () => {
+		cookies.delete('session');
+	};
+
+	return { get, signup, logout };
 };
