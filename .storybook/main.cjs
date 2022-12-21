@@ -7,7 +7,14 @@ module.exports = {
 		'@storybook/addon-essentials',
 		'@storybook/addon-interactions',
 		'@storybook/addon-svelte-csf',
-		'@storybook/addon-postcss'
+		{
+			name: '@storybook/addon-postcss',
+			options: {
+				postcssLoaderOptions: {
+					implementation: require('postcss')
+				}
+			}
+		}
 	],
 	framework: '@storybook/svelte',
 	svelteOptions: {
