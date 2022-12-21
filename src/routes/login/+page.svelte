@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Button from '$lib/Button.svelte';
 	import Heading from '$lib/Heading.svelte';
 	import type { ActionData } from './$types';
@@ -9,7 +10,7 @@
 
 <div class="flex flex-col items-end w-full">
 	<Heading>Hi there, who are you?</Heading>
-	<form method="post" class="flex flex-col items-end gap-4" class:invalid>
+	<form method="post" class="flex flex-col items-end gap-4" class:invalid use:enhance>
 		<div class="flex flex-col">
 			<input
 				name="name"
