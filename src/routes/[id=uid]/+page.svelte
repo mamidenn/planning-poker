@@ -8,18 +8,29 @@
 	import CardDisplay from '$lib/CardDisplay.svelte';
 	import Button from '$lib/Button.svelte';
 	import _ from 'lodash';
+	import Heading from '$lib/Heading.svelte';
 	const { random, range } = _;
 
 	export let data: PageServerData;
+	let button: Button[] = [];
+	$: console.log(button);
 
 	const { user, users } = realtime(data.id, data.user);
 </script>
 
-<h1>Hello {data.user.name}! This is session {data.id}.</h1>
+<svelte:window
+	on:keypress={(e) => {
+		if ([1, 2, 3, 5, 8].map((k) => k.toString()).includes(e.key)) button[parseInt(e.key)]?.click();
+	}}
+/>
 
-{#each [1, 2, 3, 5, 8, 13] as vote}
-	<Button on:click={() => ($user.vote = vote)}>{vote}</Button>
-{/each}
+<Heading>Hello {data.user.name}! This is session {data.id}.</Heading>
+
+<div class="flex">
+	{#each [1, 2, 3, 5, 8, 13] as vote}
+		<Button bind:this={button[vote]} on:click={() => ($user.vote = vote)}>{vote}</Button>
+	{/each}
+</div>
 
 <CardDisplay
 	cards={{
