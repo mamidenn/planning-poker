@@ -9,13 +9,11 @@
 	import Button from '$lib/Button.svelte';
 	import _ from 'lodash';
 	import Heading from '$lib/Heading.svelte';
-	const { random, range } = _;
 
 	export let data: PageServerData;
 	let button: Button[] = [];
-	$: console.log(button);
 
-	const { user, users } = realtime(data.id, data.user);
+	const { user$, users$ } = realtime(data.id, data.user);
 </script>
 
 <svelte:window
@@ -28,16 +26,15 @@
 
 <div class="flex">
 	{#each [1, 2, 3, 5, 8, 13] as vote}
-		<Button bind:this={button[vote]} on:click={() => ($user.vote = vote)}>{vote}</Button>
+		<Button bind:this={button[vote]} on:click={() => ($user$.vote = vote)}>{vote}</Button>
 	{/each}
 </div>
 
 <CardDisplay
 	cards={{
-		[data.user.name]: $user.vote,
-		...$users
-			.filter(({ id }) => id !== $user.id)
-			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {}),
-		...range(20).reduce((acc, i) => ({ ...acc, [i]: random(13, false) }), {})
+		[data.user.name]: $user$.vote,
+		...$users$
+			.filter(({ id }) => id !== $user$.id)
+			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})
 	}}
 />

@@ -1,5 +1,14 @@
 import { supabase } from '$lib/supabase';
-import { filter, BehaviorSubject, delayWhen, map, of, debounceTime } from 'rxjs';
+import {
+	filter,
+	BehaviorSubject,
+	delayWhen,
+	map,
+	of,
+	debounceTime,
+	shareReplay,
+	finalize
+} from 'rxjs';
 import { last } from 'lodash';
 import type { Updater } from 'svelte/store';
 import { browser } from '$app/environment';
@@ -31,21 +40,23 @@ class SvelteSubject<T> extends BehaviorSubject<T> {
 export const realtime = (channelName: string, user: UserData) => {
 	if (!browser) {
 		return {
-			user: new SvelteSubject<UserData>({ id: '', name: '' }),
-			users: of<UserData[]>([])
+			user$: new SvelteSubject<UserData>({ id: '', name: '' }),
+			users$: of<UserData[]>([])
 		};
 	}
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('CLOSED');
 	const presenceState = new BehaviorSubject<PresenceState>({});
 	const user$ = new SvelteSubject<UserData>(user);
-	const users = presenceState.pipe(
-		map(
-			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
-		)
-	);
 	const channel = supabase.channel(channelName, {
 		config: { presence: { key: user.id } }
 	});
+	const users$ = presenceState.pipe(
+		map(
+			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
+		),
+		finalize(() => channel.unsubscribe()),
+		shareReplay({ bufferSize: 1, refCount: true })
+	);
 
 	user$
 		.pipe(
@@ -62,5 +73,5 @@ export const realtime = (channelName: string, user: UserData) => {
 			connectionStatus.next(status);
 		});
 
-	return { user: user$, users };
+	return { user$, users$ };
 };
