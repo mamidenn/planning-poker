@@ -8,7 +8,7 @@
 	import type { TransitionConfig } from 'svelte/transition';
 	import { uid } from 'uid';
 	import type { AnimationContext } from './CardDisplay.svelte';
-	export let label: string | number = 'C';
+	export let label: string | number = '?';
 	export let orientation: Orientation = 'faceUp';
 
 	const animation = getContext<AnimationContext>('animation');
@@ -38,7 +38,7 @@
 							fill="white"
 							text-anchor="middle"
 							dominant-baseline="middle"
-							class="label">{label}</text
+							class="label">{label || '?'}</text
 						>
 					</mask>
 				</defs>

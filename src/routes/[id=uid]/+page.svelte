@@ -14,7 +14,7 @@
 	export let data: PageServerData;
 	let button: Button[] = [];
 
-	const { user$, users$, revealed } = realtime(data.id, data.user);
+	const { user, users, revealed } = realtime(data.id, data.user);
 	let orientation: Orientation;
 	$: orientation = $revealed ? 'faceUp' : 'faceDown';
 </script>
@@ -29,15 +29,15 @@
 
 <div class="flex">
 	{#each [1, 2, 3, 5, 8, 13] as vote}
-		<Button bind:this={button[vote]} on:click={() => ($user$.vote = vote)}>{vote}</Button>
+		<Button bind:this={button[vote]} on:click={() => ($user.vote = vote)}>{vote}</Button>
 	{/each}
 </div>
 
 <CardDisplay
 	cards={{
-		[data.user.name]: $user$.vote,
-		...$users$
-			.filter(({ id }) => id !== $user$.id)
+		[data.user.name]: $user.vote,
+		...$users
+			.filter(({ id }) => id !== $user.id)
 			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})
 	}}
 	{orientation}

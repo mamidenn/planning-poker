@@ -43,14 +43,14 @@ export const realtime: (
 	channelName: string,
 	user: UserData
 ) => {
-	user$: SvelteSubject<UserData>;
-	users$: Observable<UserData[]>;
+	user: SvelteSubject<UserData>;
+	users: Observable<UserData[]>;
 	revealed: Writable<boolean>;
 } = (channelName, user) => {
 	if (!browser) {
 		return {
-			user$: new SvelteSubject<UserData>({ id: '', name: '' }),
-			users$: of<UserData[]>([]),
+			user: new SvelteSubject<UserData>({ id: '', name: '' }),
+			users: of<UserData[]>([]),
 			revealed: writable<boolean>(false)
 		};
 	}
@@ -60,7 +60,7 @@ export const realtime: (
 	const channel = supabase.channel(channelName, {
 		config: { presence: { key: user.id } }
 	});
-	const users$ = presenceState.pipe(
+	const users = presenceState.pipe(
 		map(
 			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
 		),
@@ -122,5 +122,5 @@ export const realtime: (
 			connectionStatus.next(status);
 		});
 
-	return { user$, users$, revealed };
+	return { user: user$, users, revealed };
 };
