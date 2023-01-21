@@ -7,10 +7,12 @@ import {
 	of,
 	debounceTime,
 	shareReplay,
-	finalize
+	finalize,
+	from,
+	Observable
 } from 'rxjs';
 import { last } from 'lodash';
-import type { Updater } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 interface PresenceState {
@@ -32,16 +34,24 @@ class SvelteSubject<T> extends BehaviorSubject<T> {
 	set(value: T): void {
 		this.next(value);
 	}
-	update(updater: Updater<T>): void {
+	update(updater: (value: T) => T): void {
 		this.next(updater(this.value));
 	}
 }
 
-export const realtime = (channelName: string, user: UserData) => {
+export const realtime: (
+	channelName: string,
+	user: UserData
+) => {
+	user$: SvelteSubject<UserData>;
+	users$: Observable<UserData[]>;
+	revealed: Writable<boolean>;
+} = (channelName, user) => {
 	if (!browser) {
 		return {
 			user$: new SvelteSubject<UserData>({ id: '', name: '' }),
-			users$: of<UserData[]>([])
+			users$: of<UserData[]>([]),
+			revealed: writable<boolean>(false)
 		};
 	}
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('CLOSED');
@@ -58,6 +68,38 @@ export const realtime = (channelName: string, user: UserData) => {
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
 
+	const _revealed = new BehaviorSubject({
+		revealed: false,
+		isLocalValue: false
+	});
+	_revealed
+		.pipe(
+			filter(({ isLocalValue }) => isLocalValue),
+			map(({ revealed }) => ({ revealed, isLocalValue: false }))
+		)
+		.subscribe(async ({ revealed }) => {
+			await supabase.from('sessions').upsert({ id: channelName, revealed });
+		});
+
+	const revealed: Writable<boolean> = {
+		set: (revealed: boolean) => _revealed.next({ revealed, isLocalValue: true }),
+		update: (fn: (v: boolean) => boolean) =>
+			_revealed.next({ revealed: fn(_revealed.value.revealed), isLocalValue: true }),
+		subscribe: (o) => {
+			const sub = _revealed.subscribe(({ revealed }) => o(revealed));
+			return () => sub.unsubscribe();
+		}
+	};
+
+	from(
+		supabase
+			.from('sessions')
+			.upsert({ id: channelName })
+			.select('revealed')
+			.single()
+			.then<boolean>((res) => res.data?.revealed)
+	).subscribe((revealed) => _revealed.next({ revealed, isLocalValue: false }));
+
 	user$
 		.pipe(
 			debounceTime(500),
@@ -66,6 +108,13 @@ export const realtime = (channelName: string, user: UserData) => {
 		.subscribe((user) => channel.track(user));
 
 	channel
+		.on(
+			'postgres_changes',
+			{ event: 'UPDATE', schema: 'public', table: 'sessions', filter: `id=eq.${channelName}` },
+			({ new: { revealed } }) => {
+				_revealed.next({ revealed, isLocalValue: false });
+			}
+		)
 		.on('presence', { event: 'sync' }, () => {
 			presenceState.next(channel.presenceState());
 		})
@@ -73,5 +122,5 @@ export const realtime = (channelName: string, user: UserData) => {
 			connectionStatus.next(status);
 		});
 
-	return { user$, users$ };
+	return { user$, users$, revealed };
 };

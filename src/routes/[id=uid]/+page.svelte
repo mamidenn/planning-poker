@@ -9,11 +9,14 @@
 	import Button from '$lib/Button.svelte';
 	import _ from 'lodash';
 	import Heading from '$lib/Heading.svelte';
+	import type { Orientation } from '$lib/Card.svelte';
 
 	export let data: PageServerData;
 	let button: Button[] = [];
 
-	const { user$, users$ } = realtime(data.id, data.user);
+	const { user$, users$, revealed } = realtime(data.id, data.user);
+	let orientation: Orientation;
+	$: orientation = $revealed ? 'faceUp' : 'faceDown';
 </script>
 
 <svelte:window
@@ -37,4 +40,10 @@
 			.filter(({ id }) => id !== $user$.id)
 			.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})
 	}}
+	{orientation}
 />
+<button
+	on:click={() => {
+		revealed.update((r) => !r);
+	}}>Click me!</button
+>

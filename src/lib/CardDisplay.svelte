@@ -27,9 +27,6 @@
 		</div>
 	{/each}
 </div>
-<button on:click={() => (orientation = orientation === 'faceDown' ? 'faceUp' : 'faceDown')}
-	>Click me!</button
->
 
 <style lang="postcss">
 	.label {
