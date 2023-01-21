@@ -75,7 +75,8 @@ export const realtime: (
 	_revealed
 		.pipe(
 			filter(({ isLocalValue }) => isLocalValue),
-			map(({ revealed }) => ({ revealed, isLocalValue: false }))
+			map(({ revealed }) => ({ revealed, isLocalValue: false })),
+			debounceTime(500)
 		)
 		.subscribe(async ({ revealed }) => {
 			await supabase.from('sessions').upsert({ id: channelName, revealed });
