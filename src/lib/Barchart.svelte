@@ -39,7 +39,7 @@
 		grid-column-start: calc(var(--bar-index) + 2);
 	}
 	.bar .inner {
-		@apply h-full w-full rounded-t-sm bg-card-back-pattern;
+		@apply h-full w-full rounded-t-sm;
 	}
 	.x-axis {
 		@apply text-lg font-semibold text-purple-500 text-center py-2;

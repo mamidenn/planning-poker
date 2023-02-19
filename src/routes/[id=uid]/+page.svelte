@@ -2,7 +2,6 @@
 	import { realtime, type UserData } from '$lib/realtime';
 	import type { PageServerData } from './$types';
 	import CardDisplay from '$lib/CardDisplay.svelte';
-	import _ from 'lodash';
 	import type { Orientation } from '$lib/Card.svelte';
 	import { writable } from 'svelte/store';
 
