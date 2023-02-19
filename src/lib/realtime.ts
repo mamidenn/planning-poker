@@ -9,7 +9,7 @@ import {
 	finalize,
 	Observable
 } from 'rxjs';
-import { last } from 'lodash';
+import _ from 'lodash';
 import { get, type Readable, type Writable } from 'svelte/store';
 
 interface PresenceState {
@@ -41,7 +41,7 @@ export const realtime: (
 	});
 	const _users = presenceState.pipe(
 		map(
-			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
+			(state) => Object.values(state).map((presences) => _.last(presences)) as unknown as UserData[]
 		),
 		finalize(() => channel.unsubscribe()),
 		shareReplay({ bufferSize: 1, refCount: true })

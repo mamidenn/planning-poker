@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { range } from 'lodash';
+	import _ from 'lodash';
 	export let bars: { [value: string]: number };
 
 	$: maxAmount = Math.max(...Object.values(bars), 0);
 </script>
 
 <div class="root" style:--max-amount={maxAmount} style:--num-bars={Object.keys(bars).length}>
-	{#each range(maxAmount) as tick}
+	{#each _.range(maxAmount) as tick}
 		<p class="y-axis" style:--tick={tick}>
 			{tick + 1}
 		</p>
