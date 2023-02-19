@@ -1,7 +1,3 @@
-<script context="module" lang="ts">
-	export const prerender = true;
-</script>
-
 <script lang="ts">
 	import { realtime, type UserData } from '$lib/realtime';
 	import type { PageServerData } from './$types';
