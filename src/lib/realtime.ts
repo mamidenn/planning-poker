@@ -4,16 +4,13 @@ import {
 	BehaviorSubject,
 	delayWhen,
 	map,
-	of,
 	debounceTime,
 	shareReplay,
 	finalize,
-	from,
 	Observable
 } from 'rxjs';
 import { last } from 'lodash';
-import { writable, type Writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { get, type Readable, type Writable } from 'svelte/store';
 
 interface PresenceState {
 	[key: string]: Presence[];
@@ -22,7 +19,7 @@ interface Presence {
 	presence_ref: string;
 	[key: string]: unknown;
 }
-interface UserData {
+export interface UserData {
 	id: string;
 	name: string;
 	vote?: number;
@@ -30,43 +27,31 @@ interface UserData {
 
 type ConnectionStatus = 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR';
 
-class SvelteSubject<T> extends BehaviorSubject<T> {
-	set(value: T): void {
-		this.next(value);
-	}
-	update(updater: (value: T) => T): void {
-		this.next(updater(this.value));
-	}
-}
-
 export const realtime: (
 	channelName: string,
-	user: UserData
+	user: Readable<UserData>
 ) => {
-	user: SvelteSubject<UserData>;
-	users: Observable<UserData[]>;
+	users: Readable<UserData[]>;
 	revealed: Writable<boolean>;
 } = (channelName, user) => {
-	if (!browser) {
-		return {
-			user: new SvelteSubject<UserData>({ id: '', name: '' }),
-			users: of<UserData[]>([]),
-			revealed: writable<boolean>(false)
-		};
-	}
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('CLOSED');
 	const presenceState = new BehaviorSubject<PresenceState>({});
-	const user$ = new SvelteSubject<UserData>(user);
 	const channel = supabase.channel(channelName, {
-		config: { presence: { key: user.id } }
+		config: { presence: { key: get(user).id } }
 	});
-	const users = presenceState.pipe(
+	const _users = presenceState.pipe(
 		map(
 			(state) => Object.values(state).map((presences) => last(presences)) as unknown as UserData[]
 		),
 		finalize(() => channel.unsubscribe()),
 		shareReplay({ bufferSize: 1, refCount: true })
 	);
+	const users: Readable<UserData[]> = {
+		subscribe: (run) => {
+			const sub = _users.subscribe((value) => run(value));
+			return () => sub.unsubscribe();
+		}
+	};
 
 	const _revealed = new BehaviorSubject({
 		revealed: false,
@@ -80,7 +65,6 @@ export const realtime: (
 		.subscribe(async ({ revealed }) => {
 			await supabase.from('sessions').upsert({ id: channelName, revealed });
 		});
-
 	const revealed: Writable<boolean> = {
 		set: (revealed: boolean) => _revealed.next({ revealed, isLocalValue: true }),
 		update: (fn: (v: boolean) => boolean) =>
@@ -90,22 +74,23 @@ export const realtime: (
 			return () => sub.unsubscribe();
 		}
 	};
+	supabase
+		.from('sessions')
+		.upsert({ id: channelName })
+		.select('revealed')
+		.single()
+		.then<boolean>((res) => res.data?.revealed)
+		.then((revealed) => _revealed.next({ revealed, isLocalValue: false }));
 
-	from(
-		supabase
-			.from('sessions')
-			.upsert({ id: channelName })
-			.select('revealed')
-			.single()
-			.then<boolean>((res) => res.data?.revealed)
-	).subscribe((revealed) => _revealed.next({ revealed, isLocalValue: false }));
-
-	user$
+	new Observable<UserData>((sub) => user.subscribe((u) => sub.next(u)))
 		.pipe(
 			debounceTime(500),
 			delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED')))
 		)
-		.subscribe((user) => channel.track(user));
+		.subscribe((user) => {
+			channel.track(user);
+			return channel.untrack();
+		});
 
 	channel
 		.on(
@@ -122,5 +107,5 @@ export const realtime: (
 			connectionStatus.next(status);
 		});
 
-	return { user: user$, users, revealed };
+	return { users, revealed };
 };

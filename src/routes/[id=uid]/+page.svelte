@@ -3,22 +3,25 @@
 </script>
 
 <script lang="ts">
-	import { realtime } from '$lib/realtime';
+	import { realtime, type UserData } from '$lib/realtime';
 	import type { PageServerData } from './$types';
 	import CardDisplay from '$lib/CardDisplay.svelte';
 	import Button from '$lib/Button.svelte';
 	import _ from 'lodash';
 	import Heading from '$lib/Heading.svelte';
 	import type { Orientation } from '$lib/Card.svelte';
+	import { writable } from 'svelte/store';
 
 	export let data: PageServerData;
 	let button: Button[] = [];
+	const user = writable<UserData>({ ...data.user });
 
-	const { user, users, revealed } = realtime(data.id, data.user);
+	const { users, revealed } = realtime(data.id, user);
 	let orientation: Orientation;
 	$: orientation = $revealed ? 'faceUp' : 'faceDown';
 </script>
 
+<!-- Add keyboard shortcuts for vote buttons -->
 <svelte:window
 	on:keypress={(e) => {
 		if ([1, 2, 3, 5, 8].map((k) => k.toString()).includes(e.key)) button[parseInt(e.key)]?.click();
