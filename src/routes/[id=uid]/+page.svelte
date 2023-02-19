@@ -7,11 +7,17 @@
 
 	export let data: PageServerData;
 	let buttons: HTMLButtonElement[] = [];
-	const user = writable<UserData>({ ...data.user });
+	const user = writable<UserData>({ ...data.user, spectating: false });
 
 	const { users, revealed } = realtime(data.id, user);
 	let orientation: Orientation;
 	$: orientation = $revealed ? 'faceUp' : 'faceDown';
+
+	function userFirst(a: UserData, b: UserData) {
+		if (a.id === data.user.id) return -2;
+		if (b.id === data.user.id) return 2;
+		return a.name.localeCompare(b.name);
+	}
 </script>
 
 <svelte:head>
@@ -32,9 +38,10 @@
 
 		<CardDisplay
 			cards={{
-				[data.user.name]: $user.vote,
 				...$users
-					.filter(({ id }) => id !== $user.id)
+					.filter(({ id, spectating }) => id !== data.user.id && !spectating)
+					.concat(!$user.spectating ? [$user] : [])
+					.sort(userFirst)
 					.reduce((acc, { name, vote }) => ({ ...acc, [name]: vote }), {})
 			}}
 			{orientation}
@@ -44,23 +51,36 @@
 <div class="container mx-auto p-8 space-y-8 text-center">
 	<h2>🗳️ Cast your vote</h2>
 	<p>You can also press the number keys on your keyboard to vote.</p>
-	<div class="space-x-4">
-		<div class="btn-group variant-ghost-primary">
-			{#each [1, 2, 3, 5, 8, 13, undefined] as vote}
-				<button
-					class:variant-filled-primary={vote === $user.vote}
-					bind:this={buttons[vote ?? 0]}
-					on:click={() => ($user.vote = vote)}>{vote ?? '?'}</button
-				>
-			{/each}
-		</div>
+	<div class="flex flex-wrap justify-center gap-4">
+		{#if !$user.spectating}
+			<div class="btn-group variant-ghost-primary">
+				{#each [1, 2, 3, 5, 8, 13, undefined] as vote}
+					<button
+						class:variant-filled-primary={vote === $user.vote}
+						bind:this={buttons[vote ?? 0]}
+						on:click={() => ($user.vote = vote)}>{vote ?? '?'}</button
+					>
+				{/each}
+			</div>
+		{/if}
 		<span class="space-x-1">
 			<button class="btn variant-filled-primary" on:click={() => ($revealed = !$revealed)}>
 				Flip
 			</button>
-			<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
-				Reset
-			</button>
+			{#if !$user.spectating}
+				<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
+					Reset
+				</button>
+				<button class="btn variant-ghost" on:click={() => ($user.spectating = true)}>
+					<span>👻</span>
+					<span>Spectate</span>
+				</button>
+			{:else}
+				<button class="btn variant-ghost" on:click={() => ($user.spectating = false)}>
+					<span>👻</span>
+					<span>Stop Spectating</span>
+				</button>
+			{/if}
 		</span>
 	</div>
 </div>

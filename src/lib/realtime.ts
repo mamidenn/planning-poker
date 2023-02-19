@@ -23,6 +23,7 @@ export interface UserData {
 	id: string;
 	name: string;
 	vote?: number;
+	spectating: boolean;
 }
 
 type ConnectionStatus = 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR';
