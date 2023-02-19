@@ -19,9 +19,9 @@
 	};
 </script>
 
-<div class="flex flex-wrap gap-2">
+<div class="flex flex-wrap gap-8 justify-center">
 	{#each users(orientation) as user (user)}
-		<div class="flex flex-col items-center" animate:flip={{ duration: animation.duration }}>
+		<div class="space-y-1" animate:flip={{ duration: animation.duration }}>
 			<Card {orientation} label={cards[user]} />
 			<p class="label">{user}</p>
 		</div>
@@ -30,6 +30,6 @@
 
 <style lang="postcss">
 	.label {
-		@apply col-start-1 font-medium text-purple-500 text-end self-center px-2;
+		@apply font-medium;
 	}
 </style>

@@ -1,5 +1,4 @@
 <script>
-	import Heading from '$lib/Heading.svelte';
 </script>
 
-<Heading>Let's play a game...</Heading>
+<h1>Let's play a game...</h1>
