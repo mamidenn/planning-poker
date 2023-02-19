@@ -23,7 +23,7 @@
 
 <div class="transition-enforcer">
 	{#key orientation}
-		<svg xmlns="http://www.w3.org/2000/svg" class="card" transition:rotate>
+		<svg xmlns="http://www.w3.org/2000/svg" class="card" transition:rotate|local>
 			<defs>
 				<linearGradient id={`g${id}`} class="gradient" gradientTransform="rotate(45)">
 					<stop offset="0" />
