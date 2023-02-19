@@ -6,6 +6,10 @@
 	$: invalid = form?.validation;
 </script>
 
+<svelte:head>
+	<title>Login - Planning Poker</title>
+</svelte:head>
+
 <div class="variant-glass-surface border-b border-black/5  dark:border-white/5">
 	<div class="container mx-auto p-32 space-y-8 text-center">
 		<h1>Hi there, who are you?</h1>

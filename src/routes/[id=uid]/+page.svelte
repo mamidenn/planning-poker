@@ -14,6 +14,10 @@
 	$: orientation = $revealed ? 'faceUp' : 'faceDown';
 </script>
 
+<svelte:head>
+	<title>{data.id} - Planning Poker</title>
+</svelte:head>
+
 <!-- Add keyboard shortcuts for vote buttons -->
 <svelte:window
 	on:keypress={(e) => {
@@ -54,9 +58,9 @@
 			<button class="btn variant-filled-primary" on:click={() => ($revealed = !$revealed)}>
 				Flip
 			</button>
-			<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}
-				>Reset</button
-			>
+			<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
+				Reset
+			</button>
 		</span>
 	</div>
 </div>
