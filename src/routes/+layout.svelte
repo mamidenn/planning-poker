@@ -1,20 +1,59 @@
 <script lang="ts">
-	import '@skeletonlabs/skeleton/themes/theme-skeleton.css';
 	import '@skeletonlabs/skeleton/styles/all.css';
 	import '../app.css';
 	import { AppShell, AppBar, menu, LightSwitch } from '@skeletonlabs/skeleton';
 	import Icon from 'svelte-awesome/components/Icon.svelte';
+	import { caretDown } from 'svelte-awesome/icons';
 	import { user } from 'svelte-awesome/icons';
+	import type { LayoutData } from './$types';
+
+	export let data: LayoutData;
+
+	const themes = [
+		{ icon: '💀', label: 'Skeleton', name: 'skeleton' },
+		{ icon: '🤖', label: 'Modern', name: 'modern' },
+		{ icon: '🚀', label: 'Rocket', name: 'rocket' },
+		{ icon: '🧜‍♀️', label: 'Seafoam', name: 'seafoam' },
+		{ icon: '📺', label: 'Vintage', name: 'vintage' },
+		{ icon: '🏜️', label: 'Sahara', name: 'sahara' },
+		{ icon: '👔', label: 'Hamlindigo', name: 'hamlindigo' },
+		{ icon: '💫', label: 'Gold Nouveau', name: 'gold-nouveau' },
+		{ icon: '⭕', label: 'Crimson', name: 'crimson' }
+	];
 </script>
 
 <AppShell>
 	<svelte:fragment slot="header">
 		<AppBar class="shadow-lg">
 			<svelte:fragment slot="lead"><strong>Planning Poker</strong></svelte:fragment>
+			{data.theme}
 			<svelte:fragment slot="trail">
 				<LightSwitch />
 				<span class="relative">
-					<button use:menu={{ menu: 'user' }} class="btn-icon variant-filled-secondary p-0">
+					<button use:menu={{ menu: 'theme' }} class="btn hover:variant-soft-secondary">
+						<span>Theme</span><Icon data={caretDown} />
+					</button>
+					<form method="post" action="/?/setTheme">
+						<nav class="list-nav card p-4 w-64 shadow-xl" data-menu="theme">
+							<ul>
+								{#each themes as t}
+									<li>
+										<button
+											class="w-full h-full"
+											class:bg-primary-active-token={t.name === data.theme}
+											name="theme"
+											value={t.name}
+										>
+											<span>{t.icon}</span><span>{t.label}</span>
+										</button>
+									</li>
+								{/each}
+							</ul>
+						</nav>
+					</form>
+				</span>
+				<span class="relative">
+					<button use:menu={{ menu: 'user' }} class="btn-icon hover:variant-soft-secondary p-0">
 						<Icon data={user} />
 					</button>
 					<nav class="list-nav card p-4 w-64 shadow-xl" data-menu="user">
