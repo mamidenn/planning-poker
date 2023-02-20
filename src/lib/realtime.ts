@@ -1,14 +1,5 @@
 import { supabase } from '$lib/supabase';
-import {
-	filter,
-	BehaviorSubject,
-	delayWhen,
-	map,
-	debounceTime,
-	shareReplay,
-	finalize,
-	Observable
-} from 'rxjs';
+import { filter, BehaviorSubject, delayWhen, map, shareReplay, finalize, Observable } from 'rxjs';
 import _ from 'lodash';
 import { get, type Readable, type Writable } from 'svelte/store';
 
@@ -52,14 +43,9 @@ export const realtime = (channelName: string, user: Writable<UserData>) => {
 		revealed: false,
 		isLocalValue: false
 	});
-	_revealed
-		.pipe(
-			filter(({ isLocalValue }) => isLocalValue),
-			debounceTime(500)
-		)
-		.subscribe(async ({ revealed }) => {
-			await supabase.from('sessions').upsert({ id: channelName, revealed });
-		});
+	_revealed.pipe(filter(({ isLocalValue }) => isLocalValue)).subscribe(async ({ revealed }) => {
+		await supabase.from('sessions').upsert({ id: channelName, revealed });
+	});
 	const revealed: Writable<boolean> = {
 		set: (revealed: boolean) => _revealed.next({ revealed, isLocalValue: true }),
 		update: (fn: (v: boolean) => boolean) =>
@@ -78,10 +64,7 @@ export const realtime = (channelName: string, user: Writable<UserData>) => {
 		.then((revealed) => _revealed.next({ revealed, isLocalValue: false }));
 
 	new Observable<UserData>((sub) => user.subscribe((u) => sub.next(u)))
-		.pipe(
-			debounceTime(500),
-			delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED')))
-		)
+		.pipe(delayWhen(() => connectionStatus.pipe(filter((status) => status === 'SUBSCRIBED'))))
 		.subscribe((user) => {
 			channel.track(user);
 			return channel.untrack();
