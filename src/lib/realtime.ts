@@ -28,13 +28,7 @@ export interface UserData {
 
 type ConnectionStatus = 'SUBSCRIBED' | 'TIMED_OUT' | 'CLOSED' | 'CHANNEL_ERROR';
 
-export const realtime: (
-	channelName: string,
-	user: Readable<UserData>
-) => {
-	users: Readable<UserData[]>;
-	revealed: Writable<boolean>;
-} = (channelName, user) => {
+export const realtime = (channelName: string, user: Writable<UserData>) => {
 	const connectionStatus = new BehaviorSubject<ConnectionStatus>('CLOSED');
 	const presenceState = new BehaviorSubject<PresenceState>({});
 	const channel = supabase.channel(channelName, {
@@ -104,9 +98,22 @@ export const realtime: (
 		.on('presence', { event: 'sync' }, () => {
 			presenceState.next(channel.presenceState());
 		})
+		.on('broadcast', { event: 'RESET' }, () => {
+			user.update((u) => ({ ...u, vote: undefined }));
+		})
 		.subscribe(async (status) => {
 			connectionStatus.next(status);
 		});
 
-	return { users, revealed };
+	// TODO: implement singleton dispatcher that ensures messages are spread out
+	// to adhere to rate limits (https://supabase.com/docs/guides/realtime/rate-limits)
+	async function reset() {
+		user.update((u) => ({ ...u, vote: undefined }));
+		await new Promise((res) => setTimeout(res, 100));
+		revealed.set(false);
+		await new Promise((res) => setTimeout(res, 100));
+		await channel.send({ type: 'broadcast', event: 'RESET' });
+	}
+
+	return { users, revealed, reset };
 };

@@ -9,7 +9,7 @@
 	let buttons: HTMLButtonElement[] = [];
 	const user = writable<UserData>({ ...data.user, spectating: false });
 
-	const { users, revealed } = realtime(data.id, user);
+	const { users, revealed, reset } = realtime(data.id, user);
 	let orientation: Orientation;
 	$: orientation = $revealed ? 'faceUp' : 'faceDown';
 
@@ -72,9 +72,7 @@
 			<button class="btn variant-filled-primary" on:click={() => ($revealed = !$revealed)}>
 				Flip
 			</button>
-			<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
-				Reset
-			</button>
+			<button class="btn variant-filled-secondary" on:click={reset}> Reset </button>
 			<button class="btn variant-ghost" on:click={() => ($user.spectating = !$user.spectating)}>
 				<span>👻</span>
 				<span>{$user.spectating ? 'Stop Spectating' : 'Spectate'}</span>
