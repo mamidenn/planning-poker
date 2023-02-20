@@ -85,10 +85,10 @@
 		grid-row: 1/2;
 	}
 	.card {
-		@apply w-28 h-44 border-2 border-primary-500 rounded-md shadow-md p-1 overflow-hidden;
+		@apply w-28 h-44 border-2 border-primary-500 rounded-md shadow-md p-1 overflow-hidden transition-colors;
 	}
 	.card.empty {
-		@apply border-0  blur-sm;
+		@apply border-transparent  blur-sm;
 	}
 	.card .label {
 		@apply text-6xl font-semibold;
