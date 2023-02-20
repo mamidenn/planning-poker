@@ -4,6 +4,7 @@
 	import CardDisplay from '$lib/CardDisplay.svelte';
 	import type { Orientation } from '$lib/Card.svelte';
 	import { writable } from 'svelte/store';
+	import { fade } from 'svelte/transition';
 
 	export let data: PageServerData;
 	let buttons: HTMLButtonElement[] = [];
@@ -49,8 +50,13 @@
 	</div>
 </div>
 <div class="container mx-auto p-8 space-y-8 text-center">
-	<h2>🗳️ Cast your vote</h2>
-	<p>You can also press the number keys on your keyboard to vote.</p>
+	{#if $user.spectating}
+		<h2>🔎 You are spectating</h2>
+		<p>You can see the votes of other users, but you cannot vote yourself.</p>
+	{:else}
+		<h2>🗳️ Cast your vote</h2>
+		<p>You can also press the number keys on your keyboard to vote.</p>
+	{/if}
 	<div class="flex flex-wrap justify-center gap-4">
 		{#if !$user.spectating}
 			<div class="btn-group variant-ghost-primary">
@@ -67,20 +73,13 @@
 			<button class="btn variant-filled-primary" on:click={() => ($revealed = !$revealed)}>
 				Flip
 			</button>
-			{#if !$user.spectating}
-				<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
-					Reset
-				</button>
-				<button class="btn variant-ghost" on:click={() => ($user.spectating = true)}>
-					<span>👻</span>
-					<span>Spectate</span>
-				</button>
-			{:else}
-				<button class="btn variant-ghost" on:click={() => ($user.spectating = false)}>
-					<span>👻</span>
-					<span>Stop Spectating</span>
-				</button>
-			{/if}
+			<button class="btn variant-filled-secondary" on:click={() => ($user.vote = undefined)}>
+				Reset
+			</button>
+			<button class="btn variant-ghost" on:click={() => ($user.spectating = !$user.spectating)}>
+				<span>👻</span>
+				<span>{$user.spectating ? 'Stop Spectating' : 'Spectate'}</span>
+			</button>
 		</span>
 	</div>
 </div>
