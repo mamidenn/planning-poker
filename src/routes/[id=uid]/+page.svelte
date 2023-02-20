@@ -61,7 +61,7 @@
 			<div class="btn-group variant-ghost-primary">
 				{#each [1, 2, 3, 5, 8, 13, undefined] as vote}
 					<button
-						class:variant-filled-primary={vote === $user.vote}
+						class:bg-primary-active-token={$user.vote === vote}
 						bind:this={buttons[vote ?? 0]}
 						on:click={() => ($user.vote = vote)}>{vote ?? 'Abstain'}</button
 					>
