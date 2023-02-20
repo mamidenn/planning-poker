@@ -8,7 +8,7 @@
 	import type { TransitionConfig } from 'svelte/transition';
 	import { uid } from 'uid';
 	import type { AnimationContext } from './CardDisplay.svelte';
-	export let label: string | number = '?';
+	export let label: number | undefined;
 	export let orientation: Orientation = 'faceUp';
 
 	const animation = getContext<AnimationContext>('animation');
@@ -23,7 +23,12 @@
 
 <div class="transition-enforcer">
 	{#key orientation}
-		<svg xmlns="http://www.w3.org/2000/svg" class="card" transition:rotate|local>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="card"
+			class:empty={label === undefined}
+			transition:rotate|local
+		>
 			<defs>
 				<linearGradient id={`g${id}`} class="gradient" gradientTransform="rotate(45)">
 					<stop offset="0" />
@@ -48,7 +53,7 @@
 						fill="white"
 						text-anchor="middle"
 						dominant-baseline="middle"
-						class="label">{label ?? '?'}</text
+						class="label">{label ?? ''}</text
 					>
 				</mask>
 				<mask id={`b${id}`}>
@@ -81,6 +86,9 @@
 	}
 	.card {
 		@apply w-28 h-44 border-2 border-primary-500 rounded-md shadow-md p-1 overflow-hidden;
+	}
+	.card.empty {
+		@apply border-0  blur-sm;
 	}
 	.card .label {
 		@apply text-6xl font-semibold;

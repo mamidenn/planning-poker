@@ -7,7 +7,7 @@
 
 	import { flip } from 'svelte/animate';
 	import Card, { type Orientation } from './Card.svelte';
-	export let cards: { [user: string]: number } = {};
+	export let cards: { [user: string]: number | undefined } = {};
 
 	const animation: AnimationContext = { duration: 300 };
 	setContext<AnimationContext>('animation', animation);
@@ -15,7 +15,9 @@
 	export let orientation: Orientation = 'faceDown';
 	const users = (orientation: Orientation) => {
 		const users = Object.keys(cards);
-		return orientation === 'faceDown' ? users : users.sort((a, b) => cards[a] - cards[b]);
+		return orientation === 'faceDown'
+			? users
+			: users.sort((a, b) => (cards[a] ?? 0) - (cards[b] ?? 0));
 	};
 </script>
 

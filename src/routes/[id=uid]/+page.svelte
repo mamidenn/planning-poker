@@ -4,7 +4,6 @@
 	import CardDisplay from '$lib/CardDisplay.svelte';
 	import type { Orientation } from '$lib/Card.svelte';
 	import { writable } from 'svelte/store';
-	import { fade } from 'svelte/transition';
 
 	export let data: PageServerData;
 	let buttons: HTMLButtonElement[] = [];
@@ -64,7 +63,7 @@
 					<button
 						class:variant-filled-primary={vote === $user.vote}
 						bind:this={buttons[vote ?? 0]}
-						on:click={() => ($user.vote = vote)}>{vote ?? '?'}</button
+						on:click={() => ($user.vote = vote)}>{vote ?? 'Abstain'}</button
 					>
 				{/each}
 			</div>
