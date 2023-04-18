@@ -1,15 +1,14 @@
 <script lang="ts">
-	import '@skeletonlabs/skeleton/styles/all.css';
-	import '../app.css';
-	import { AppShell, AppBar, menu, LightSwitch } from '@skeletonlabs/skeleton';
-	import Icon from 'svelte-awesome/components/Icon.svelte';
-	import { caretDown } from 'svelte-awesome/icons';
-	import { user } from 'svelte-awesome/icons';
-	import type { LayoutData } from './$types';
-
 	export let data: LayoutData;
 
-	const themes = [
+	import type { Theme } from '$lib/schema';
+	import { AppBar, AppShell, LightSwitch, menu } from '@skeletonlabs/skeleton';
+	import Icon from 'svelte-awesome/components/Icon.svelte';
+	import { caretDown, user } from 'svelte-awesome/icons';
+	import '../app.css';
+	import type { LayoutData } from './$types';
+
+	const themes: { icon: string; label: string; name: Theme }[] = [
 		{ icon: '💀', label: 'Skeleton', name: 'skeleton' },
 		{ icon: '🤖', label: 'Modern', name: 'modern' },
 		{ icon: '🚀', label: 'Rocket', name: 'rocket' },
@@ -26,7 +25,6 @@
 	<svelte:fragment slot="header">
 		<AppBar class="shadow-lg">
 			<svelte:fragment slot="lead"><strong>Planning Poker</strong></svelte:fragment>
-			{data.theme}
 			<svelte:fragment slot="trail">
 				<LightSwitch />
 				<span class="relative">
