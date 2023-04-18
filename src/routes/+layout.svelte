@@ -7,6 +7,9 @@
 	import { caretDown, user } from 'svelte-awesome/icons';
 	import '../app.css';
 	import type { LayoutData } from './$types';
+	import { enhance } from '$app/forms';
+	import { update as updateTheme } from '$lib/theme';
+	import { theme as themeSchema } from '$lib/schema';
 
 	const themes: { icon: string; label: string; name: Theme }[] = [
 		{ icon: '💀', label: 'Skeleton', name: 'skeleton' },
@@ -31,7 +34,13 @@
 					<button use:menu={{ menu: 'theme' }} class="btn hover:variant-soft-secondary">
 						<span>Theme</span><Icon data={caretDown} />
 					</button>
-					<form method="post" action="/?/setTheme">
+					<form
+						method="post"
+						action="/?/setTheme"
+						use:enhance={({ data }) => {
+							updateTheme(themeSchema.parse(data.get('theme')));
+						}}
+					>
 						<nav class="list-nav card p-4 w-64 shadow-xl" data-menu="theme">
 							<ul>
 								{#each themes as t}
