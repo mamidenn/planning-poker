@@ -41,12 +41,12 @@
 							updateTheme(themeSchema.parse(data.get('theme')));
 						}}
 					>
-						<nav class="list-nav card p-4 w-64 shadow-xl" data-menu="theme">
+						<nav class="card list-nav w-64 p-4 shadow-xl" data-menu="theme">
 							<ul>
 								{#each themes as t}
 									<li>
 										<button
-											class="w-full h-full"
+											class="h-full w-full"
 											class:bg-primary-active-token={t.name === data.theme}
 											name="theme"
 											value={t.name}
@@ -60,10 +60,10 @@
 					</form>
 				</span>
 				<span class="relative">
-					<button use:menu={{ menu: 'user' }} class="btn-icon hover:variant-soft-secondary p-0">
+					<button use:menu={{ menu: 'user' }} class="btn-icon p-0 hover:variant-soft-secondary">
 						<Icon data={user} />
 					</button>
-					<nav class="list-nav card p-4 w-64 shadow-xl" data-menu="user">
+					<nav class="card list-nav w-64 p-4 shadow-xl" data-menu="user">
 						<ul>
 							<li><a href="/logout">Logout</a></li>
 						</ul>
@@ -74,7 +74,7 @@
 	</svelte:fragment>
 	<slot />
 	<svelte:fragment slot="footer">
-		<div class="text-center text-xs p-2 opacity-75">
+		<div class="p-2 text-center text-xs opacity-75">
 			Made with love, <a href="https://svelte.dev/">Svelte</a> and
 			<a href="https://www.skeleton.dev/">Skeleton</a> by
 			<a href="https://github.com/mamidenn">Martin Dennhardt</a>.

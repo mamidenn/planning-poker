@@ -34,7 +34,7 @@
 		grid-template-columns: repeat(calc(var(--num-bars) + 1), max-content);
 	}
 	.bar {
-		@apply w-24 border-2 rounded-t-md border-purple-500 z-10 p-1;
+		@apply z-10 w-24 rounded-t-md border-2 border-purple-500 p-1;
 		grid-row: calc(var(--max-amount) - var(--amount) + 1) / span max(var(--amount), 1);
 		grid-column-start: calc(var(--bar-index) + 2);
 	}
@@ -42,12 +42,12 @@
 		@apply h-full w-full rounded-t-sm;
 	}
 	.x-axis {
-		@apply text-lg font-semibold text-purple-500 text-center py-2;
+		@apply py-2 text-center text-lg font-semibold text-purple-500;
 		grid-column-start: calc(var(--bar-index) + 2);
 		grid-row-start: calc(var(--max-amount) + 1);
 	}
 	.y-axis {
-		@apply col-start-1 font-medium text-purple-500 text-end self-center px-2;
+		@apply col-start-1 self-center px-2 text-end font-medium text-purple-500;
 		grid-row-start: calc(var(--max-amount) - var(--tick));
 	}
 	.tick {

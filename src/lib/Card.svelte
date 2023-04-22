@@ -85,7 +85,7 @@
 		grid-row: 1/2;
 	}
 	.card {
-		@apply w-28 h-44 border-2 border-primary-500 rounded-md shadow-md p-1 overflow-hidden transition-colors;
+		@apply h-44 w-28 overflow-hidden rounded-md border-2 border-primary-500 p-1 shadow-md transition-colors;
 	}
 	.card.empty {
 		@apply border-transparent  blur-sm;

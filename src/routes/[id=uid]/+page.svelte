@@ -33,7 +33,7 @@
 />
 
 <div class="variant-glass-surface border-b border-black/5  dark:border-white/5">
-	<div class="container mx-auto p-16 space-y-8 text-center">
+	<div class="container mx-auto space-y-8 p-16 text-center">
 		<h1>👋 Hello {data.user.name}!</h1>
 
 		<CardDisplay
@@ -48,7 +48,7 @@
 		/>
 	</div>
 </div>
-<div class="container mx-auto p-8 space-y-8 text-center">
+<div class="container mx-auto space-y-8 p-8 text-center">
 	{#if $user.spectating}
 		<h2>🔎 You are spectating</h2>
 		<p>You can see the votes of other users, but you cannot vote yourself.</p>

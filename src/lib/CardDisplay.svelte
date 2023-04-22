@@ -21,7 +21,7 @@
 	};
 </script>
 
-<div class="flex flex-wrap gap-8 justify-center">
+<div class="flex flex-wrap justify-center gap-8">
 	{#each users(orientation) as user (user)}
 		<div class="space-y-1" animate:flip={{ duration: animation.duration }}>
 			<Card {orientation} label={cards[user]} />
