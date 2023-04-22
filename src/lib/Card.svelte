@@ -53,8 +53,10 @@
 						fill="white"
 						text-anchor="middle"
 						dominant-baseline="middle"
-						class="label">{label ?? ''}</text
+						class="label"
 					>
+						{label ?? ''}
+					</text>
 				</mask>
 				<mask id={`b${id}`}>
 					<rect width="100%" height="100%" fill={`url(#a${id})`} />
@@ -85,12 +87,12 @@
 		grid-row: 1/2;
 	}
 	.card {
-		@apply h-44 w-28 overflow-hidden rounded-md border-2 border-primary-500 p-1 shadow-md transition-colors;
+		@apply h-32 w-20 overflow-hidden rounded-md border-2 border-primary-500 p-1 shadow-md transition-colors sm:h-44 sm:w-28;
 	}
 	.card.empty {
-		@apply border-transparent  blur-sm;
+		@apply border-transparent blur-sm;
 	}
 	.card .label {
-		@apply text-6xl font-semibold;
+		@apply text-5xl font-semibold sm:text-6xl;
 	}
 </style>

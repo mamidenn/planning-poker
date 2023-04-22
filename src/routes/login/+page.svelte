@@ -11,7 +11,7 @@
 </svelte:head>
 
 <div class="variant-glass-surface border-b border-black/5  dark:border-white/5">
-	<div class="container mx-auto space-y-8 p-32 text-center">
+	<div class="container mx-auto space-y-8 px-4 py-32 text-center sm:px-32">
 		<h1>Hi there, who are you?</h1>
 		<form method="post" use:enhance>
 			<label class="label">

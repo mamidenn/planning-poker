@@ -56,9 +56,9 @@
 		<h2>🗳️ Cast your vote</h2>
 		<p>You can also press the number keys on your keyboard to vote.</p>
 	{/if}
-	<div class="flex flex-wrap justify-center gap-4">
+	<div class="flex flex-col flex-wrap items-center justify-center gap-4 sm:flex-row">
 		{#if !$user.spectating}
-			<div class="btn-group variant-ghost-primary">
+			<div class="btn-group-vertical variant-ghost-primary sm:btn-group">
 				{#each [1, 2, 3, 5, 8, 13, undefined] as vote}
 					<button
 						class:bg-primary-active-token={$user.vote === vote}
@@ -68,7 +68,7 @@
 				{/each}
 			</div>
 		{/if}
-		<span class="space-x-1">
+		<div class="flex flex-row flex-wrap justify-center gap-2">
 			<button class="btn variant-filled-primary" on:click={() => ($revealed = !$revealed)}>
 				Flip
 			</button>
@@ -77,6 +77,6 @@
 				<span>👻</span>
 				<span>{$user.spectating ? 'Stop Spectating' : 'Spectate'}</span>
 			</button>
-		</span>
+		</div>
 	</div>
 </div>
